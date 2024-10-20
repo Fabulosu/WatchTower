@@ -52,24 +52,29 @@ interface PageData {
 
 const calculateUptimeForDay = (incidents: any[], date: string) => {
     let totalDowntimeSeconds = 0;
+    const startOfDay = dayjs(date).startOf('day');
+    const endOfDay = dayjs(date).endOf('day');
 
     incidents.forEach((incident: any) => {
         const incidentStart = dayjs(incident.createdAt);
-        const incidentEnd = incident.resolvedAt ? dayjs(incident.resolvedAt) : dayjs(); // If unresolved, use current time
-        const incidentDay = incidentStart.format('YYYY-MM-DD');
+        const incidentEnd = incident.resolvedAt ? dayjs(incident.resolvedAt) : dayjs();
 
-        // Check if the incident happened on the given date
-        if (incidentDay === date) {
-            // Calculate downtime in seconds (cap it at 24 hours for a single day)
-            const downtime = Math.min(incidentEnd.diff(incidentStart, 'second'), 86400);
-            totalDowntimeSeconds += downtime;
+        // Incident affects the current day if it overlaps with the date being checked
+        if (incidentStart.isBefore(endOfDay) && incidentEnd.isAfter(startOfDay)) {
+            // Calculate the overlap between the incident and the current day
+            const downtimeStart = incidentStart.isBefore(startOfDay) ? startOfDay : incidentStart;
+            const downtimeEnd = incidentEnd.isAfter(endOfDay) ? endOfDay : incidentEnd;
+
+            const downtime = downtimeEnd.diff(downtimeStart, 'second');
+            totalDowntimeSeconds += Math.min(downtime, 86400);
         }
     });
 
-    // Uptime formula: 1 - (total downtime / total seconds in a day) * 100
     const uptimePercentage = ((1 - totalDowntimeSeconds / 86400) * 100).toFixed(2);
     return Number(uptimePercentage);
 };
+
+
 
 const calculateTotalUptime = (uptimeData: { day: string; uptime: number }[]) => {
     const totalUptime = uptimeData.reduce((acc, stat) => acc + stat.uptime, 0) / uptimeData.length;
@@ -81,7 +86,6 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     const [pageData, setPageData] = useState<PageData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [hasOpenIncidents, setHasOpenIncidents] = useState<boolean>(false);
-    const [uptimeStats, setUptimeStats] = useState<{ day: string; uptime: number }[]>([]);
 
     useEffect(() => {
         const fetchPageData = async () => {
@@ -91,29 +95,6 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                 const openIncidents = response.data.components.some((component: Component) =>
                     component.incidents.some((incident: Incident) => !incident.resolvedAt)
                 );
-
-                console.log(openIncidents)
-
-                const today = dayjs();
-                const last90Days = Array.from({ length: 90 }, (_, i) =>
-                    today.subtract(i, 'day').format('YYYY-MM-DD')
-                );
-
-                const uptimeData = last90Days.map((date) => {
-                    let totalUptime = 100; // Assume 100% uptime
-
-                    // For each component, calculate the uptime
-                    response.data.components.forEach((component: any) => {
-                        const uptimeForDay = calculateUptimeForDay(component.incidents, date);
-                        totalUptime = Math.min(totalUptime, uptimeForDay); // Take the minimum uptime across components
-                    });
-
-                    return { day: date, uptime: totalUptime };
-                });
-
-                console.log(uptimeData)
-
-                setUptimeStats(uptimeData);
 
                 setHasOpenIncidents(openIncidents);
                 setPageData(response.data);
@@ -126,19 +107,6 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
         fetchPageData();
     }, []);
-
-    // const getSeverityColor = (severity: string) => {
-    //     switch (severity) {
-    //         case 'Minor':
-    //             return 'bg-yellow-500';
-    //         case 'Partial':
-    //             return 'bg-orange-500';
-    //         case 'Major':
-    //             return 'bg-red-500';
-    //         default:
-    //             return 'bg-green-500'; // No incidents = green
-    //     }
-    // };
 
     const renderUptimeBars = (component: Component) => {
         const today = dayjs();
@@ -159,7 +127,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
             <>
                 <div className="flex flex-wrap space-x-1 mb-4">
                     {uptimeData.map((stat, index) => (
-                        <TooltipProvider key={index}>
+                        <TooltipProvider delayDuration={200} key={index}>
                             <Tooltip>
                                 <TooltipTrigger className='hover:cursor-default'>
                                     <div
@@ -167,8 +135,9 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                             }`}
                                     ></div>
                                 </TooltipTrigger>
-                                <TooltipContent side='bottom' className='bg-gray-400 border-0 duration-0'>
-                                    <p>Uptime {stat.uptime}%</p>
+                                <TooltipContent side='bottom' className='bg-gray-800 drop-shadow-lg border-0 duration-0'>
+                                    <p className='font-semibold text-gray-400'>{stat.day}</p>
+                                    <p className='text-gray-400'>Uptime {stat.uptime}%</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -186,7 +155,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     };
 
     if (loading) {
-        return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
+        return <div className="flex justify-center font-semibold items-center h-screen text-white">Loading...</div>;
     }
 
     if (!pageData) {
@@ -194,17 +163,17 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     }
 
     return (
-        <div className="container flex flex-col items-center mx-auto py-8">
+        <div className="container flex flex-col lg:w-[58vw] items-center mx-auto py-8">
             <h1 className="text-3xl font-bold mb-6 text-white">{pageData.name}</h1>
 
             {!hasOpenIncidents && (
-                <div className="bg-gray-800 p-4 mb-6 rounded-lg shadow-2xl">
+                <div className="bg-gray-800 p-4 mb-6 w-full rounded-lg shadow-2xl">
                     <div className='flex items-center gap-4'>
                         <div>
-                            <FaCircle size={25} className='text-green-500 animate-ping2 absolute inline-flex duration-300' />
+                            <FaCircle size={25} className='text-green-500 animate-ping2 absolute inline-flex duration-400' />
                             <FaCircle size={25} className='text-green-500 relative inline-flex' />
                         </div>
-                        <h2 className="text-3xl font-semibold"> All systems <span className='text-green-500'>operational</span></h2>
+                        <h2 className="text-3xl font-semibold text-white"> All systems <span className='text-green-500'>operational</span></h2>
                     </div>
                 </div>
             )}
@@ -214,39 +183,13 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                         <h2 className="text-xl font-semibold text-white">{component.name}</h2>
                         <div className='flex justify-between w-full'>
                             <p className="text-gray-500">{component.description}</p>
-                            <p className={`${component.status == 1 ? "text-green-500" : "text-orange-500"} font-light mb-4`}>{component.status == 1 ? "Operational" : "Outage"}</p>
+                            <p className={`${component.status == 1 ? "text-green-400" : component.status == 2 ? "text-orange-400" : component.status == 3 ? "text-red-400" : component.status == 4 ? "text-blue-400" : ""} font-light text-sm mb-4`}>
+                                {component.status == 1 ? "Operational" : component.status == 2 ? "Partial Outage" : component.status == 3 ? "Major Outage" : component.status == 4 ? "Under Maintenance" : ""}
+                            </p>
                         </div>
 
-                        {/* Uptime visualization */}
                         {renderUptimeBars(component)}
 
-                        {/* <div className="flex flex-wrap space-x-1 mb-4">
-                            {uptimeStats.map((stat, index) => (
-                                <TooltipProvider key={index}>
-                                    <Tooltip>
-                                        <TooltipTrigger className='hover:cursor-default'>
-                                            <div
-                                                className={`w-[2px] md:w-1 lg:w-2 h-8 rounded-sm hover:scale-125 transition-all ${stat.uptime >= 90 ? 'bg-green-500' : stat.uptime >= 75 ? 'bg-yellow-500' : stat.uptime >= 50 ? 'bg-orange-500' : 'bg-red-500'
-                                                    }`}
-                                            ></div>
-                                        </TooltipTrigger>
-                                        <TooltipContent side='bottom' className='bg-gray-400 border-0 duration-0'>
-                                            <p>Uptime {stat.uptime}%</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            )).reverse()}
-                        </div> */}
-
-                        {/* <div className='flex justify-between w-full'>
-                            <p className='text-gray-500'>90 days ago</p>
-                            <div className='flex-1 h-[1px] mt-[0.75rem] ml-[1rem] mr-[1rem] bg-gray-500'></div>
-                            <p className='text-gray-500'>100% uptime</p>
-                            <div className='flex-1 h-[1px] mt-[0.75rem] ml-[1rem] mr-[1rem] bg-gray-500'></div>
-                            <p className='text-gray-500'>Today</p>
-                        </div> */}
-
-                        {/* Incidents */}
                         {component.incidents.length > 0 ? (
                             <div className="bg-gray-100 w-full mt-2 text-wrap p-4 rounded-lg">
                                 <h3 className="font-semibold">Incidents</h3>
@@ -261,7 +204,6 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                             <p className="text-green-600">Resolved at: {new Date(incident.resolvedAt).toLocaleString()}</p>
                                         )}
 
-                                        {/* Incident history */}
                                         {incident.history.length > 0 && (
                                             <div className="mt-2">
                                                 <h4 className="font-semibold">Incident History</h4>
