@@ -10,6 +10,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { CiCircleQuestion } from 'react-icons/ci';
 
 interface IncidentStatus {
     id: number;
@@ -85,18 +86,53 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     const pageId = params.id;
     const [pageData, setPageData] = useState<PageData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [hasOpenIncidents, setHasOpenIncidents] = useState<boolean>(false);
+    const [openIncidents, setOpenIncidents] = useState<Incident[]>([]);
+    const [incidentsByDay, setIncidentsByDay] = useState<{ [key: string]: Incident[] }>({});
 
     useEffect(() => {
         const fetchPageData = async () => {
             try {
                 const response = await axios.get(`${BACKEND_URL}/page/${pageId}`);
+                const components = response.data.components;
 
-                const openIncidents = response.data.components.some((component: Component) =>
-                    component.incidents.some((incident: Incident) => !incident.resolvedAt)
+                // To store unique incidents, we use a Map with the incident ID as the key.
+                const incidentsMap = new Map<number, Incident>();
+
+                // Iterate through components and their incidents
+                components.forEach((component: Component) => {
+                    component.incidents.forEach((incident: Incident) => {
+                        // Add the incident to the map using its ID, ensuring uniqueness
+                        incidentsMap.set(incident.id, incident);
+                    });
+                });
+
+                // Convert the Map to an array to get the unique incidents
+                const uniqueIncidents = Array.from(incidentsMap.values());
+
+                // Prepare for grouping incidents by the past 14 days
+                const today = dayjs();
+                const past14Days = Array.from({ length: 14 }, (_, i) =>
+                    today.subtract(i, 'day').format('YYYY-MM-DD')
                 );
 
-                setHasOpenIncidents(openIncidents);
+                const incidentsGroupedByDay: { [key: string]: Incident[] } = {};
+
+                // Group incidents by the day they occurred
+                past14Days.forEach((day) => {
+                    incidentsGroupedByDay[day] = uniqueIncidents.filter(
+                        (incident) =>
+                            dayjs(incident.createdAt).format('YYYY-MM-DD') === day
+                    );
+                });
+
+                setIncidentsByDay(incidentsGroupedByDay);
+
+                // Filter unresolved incidents for display in the "Ongoing Incidents" section
+                const unresolvedIncidents = uniqueIncidents.filter(
+                    (incident) => !incident.resolvedAt
+                );
+
+                setOpenIncidents(unresolvedIncidents);
                 setPageData(response.data);
             } catch (error) {
                 console.error('Error fetching page data', error);
@@ -106,7 +142,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
         };
 
         fetchPageData();
-    }, []);
+    }, [pageId]);
 
     const renderUptimeBars = (component: Component) => {
         const today = dayjs();
@@ -125,7 +161,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
         return (
             <>
-                <div className="flex flex-wrap space-x-1 mb-4">
+                <div className="flex flex-wrap space-x-1 my-4">
                     {uptimeData.map((stat, index) => (
                         <TooltipProvider delayDuration={200} key={index}>
                             <Tooltip>
@@ -143,13 +179,14 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                         </TooltipProvider>
                     )).reverse()}
                 </div>
-                <div className='flex justify-between w-full'>
-                    <p className='text-gray-500'>90 days ago</p>
-                    <div className='flex-1 h-[1px] mt-[0.75rem] ml-[1rem] mr-[1rem] bg-gray-500'></div>
-                    <p className='text-gray-500'>{totalUptime}% uptime</p>
-                    <div className='flex-1 h-[1px] mt-[0.75rem] ml-[1rem] mr-[1rem] bg-gray-500'></div>
-                    <p className='text-gray-500'>Today</p>
+                <div className="flex items-center w-full">
+                    <p className="text-gray-500 min-w-[100px]">90 days ago</p>
+                    <div className="flex-1 h-[1px] mx-4 bg-gray-500"></div>
+                    <p className="text-center text-gray-500">{totalUptime}% uptime</p>
+                    <div className="flex-1 flex-grow h-[1px] mx-4 bg-gray-500"></div>
+                    <p className="text-gray-500 min-w-[100px] text-right">Today</p>
                 </div>
+
             </>
         );
     };
@@ -163,10 +200,33 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     }
 
     return (
-        <div className="container flex flex-col lg:w-[58vw] items-center mx-auto py-8">
+        <div className="container flex flex-col gap-2 lg:w-[58vw] items-center mx-auto py-8">
             <h1 className="text-3xl font-bold mb-6 text-white">{pageData.name}</h1>
 
-            {!hasOpenIncidents && (
+            {openIncidents.length > 0 ? (
+                <div className="bg-gray-800 p-4 w-full rounded-lg shadow-2xl">
+                    <h2 className="text-3xl font-semibold text-white">Ongoing Incidents</h2>
+                    {openIncidents.map((incident) => (
+                        <div key={incident.id} className="mt-4 bg-gray-100 p-4 rounded-lg">
+                            <p className={`font-semibold ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
+                                {incident.name}
+                            </p>
+                            <p className="text-gray-600">Severity: {incident.severity}</p>
+                            <p className="text-gray-600">Created at: {new Date(incident.createdAt).toLocaleString()}</p>
+                            {incident.history.length > 0 && (
+                                <div className="mt-2">
+                                    <h4 className="font-semibold">Incident History</h4>
+                                    {incident.history.sort((a, b) => b.id - a.id).map((status) => (
+                                        <p key={status.id} className="text-gray-600">
+                                            {new Date(status.createdAt).toLocaleString()} - {status.statusMessage}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            ) : (
                 <div className="bg-gray-800 p-4 mb-6 w-full rounded-lg shadow-2xl">
                     <div className='flex items-center gap-4'>
                         <div>
@@ -177,26 +237,50 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                     </div>
                 </div>
             )}
-            <div className='flex flex-col gap-2'>
+
+            <div className='flex flex-col gap-2 w-full'>
                 {pageData.components.map((component) => (
                     <div key={component.id} className="bg-gray-800 rounded-lg p-4 shadow-2xl">
-                        <h2 className="text-xl font-semibold text-white">{component.name}</h2>
-                        <div className='flex justify-between w-full'>
-                            <p className="text-gray-500">{component.description}</p>
-                            <p className={`${component.status == 1 ? "text-green-400" : component.status == 2 ? "text-yellow-400" : component.status == 3 ? "text-orange-400" : component.status == 4 ? "text-red-400" : component.status == 5 ? "text-blue-400" : ""} font-light text-sm mb-4`}>
+                        <div className='flex justify-between items-center w-full'>
+                            <div className='flex gap-2 items-center'>
+                                <h2 className="text-xl font-semibold text-white">{component.name}</h2>
+                                {component.description && component.description !== null ? (
+                                    <TooltipProvider delayDuration={100}>
+                                        <Tooltip>
+                                            <TooltipTrigger className='hover:cursor-default'>
+                                                <CiCircleQuestion size={15} className='text-gray-300' />
+                                            </TooltipTrigger>
+                                            <TooltipContent side='top' className='bg-gray-800 drop-shadow-lg border-0 duration-0'>
+                                                <p className='text-gray-300'>{component.description}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                ) : null}
+
+                            </div>
+
+                            <p className={`${component.status == 1 ? "text-green-400" : component.status == 2 ? "text-yellow-400" : component.status == 3 ? "text-orange-400" : component.status == 4 ? "text-red-400" : component.status == 5 ? "text-blue-400" : ""} font-light text-sm`}>
                                 {component.status == 1 ? "Operational" : component.status == 2 ? "Degraded Performance" : component.status == 3 ? "Partial Outage" : component.status == 4 ? "Major Outage" : component.status == 5 ? "Under Maintenance" : ""}
                             </p>
                         </div>
-
-                        {renderUptimeBars(component)}
-
-                        {component.incidents.length > 0 ? (
-                            <div className="bg-gray-100 w-full mt-2 text-wrap p-4 rounded-lg">
-                                <h3 className="font-semibold">Incidents</h3>
-                                {component.incidents.map((incident) => (
-                                    <div key={incident.id} className="mt-4">
-                                        <p className="font-semibold">
-                                            {incident.name} - <span className="text-red-600">{incident.status}</span>
+                        {component.displayUptime ? (
+                            renderUptimeBars(component)
+                        ) : null}
+                    </div>
+                ))}
+            </div>
+            <div className="bg-gray-800 p-4 mb-6 w-full rounded-lg shadow-2xl">
+                <h2 className="text-2xl font-semibold text-white">Incident History (Last 14 Days)</h2>
+                {Object.entries(incidentsByDay).map(([day, incidents]) => (
+                    <div key={day} className="mt-4">
+                        <h3 className="text-lg font-bold text-white">{dayjs(day).format('MMMM D, YYYY')}</h3>
+                        <div className='w-full h-[1px] my-2 bg-gray-600' />
+                        {incidents.length > 0 ? (
+                            <div className="flex flex-col gap-2 p-4 rounded-lg mt-2">
+                                {incidents.map((incident) => (
+                                    <div key={incident.id} className='bg-gray-100 rounded-lg p-4'>
+                                        <p className={`font-semibold ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
+                                            {incident.name}
                                         </p>
                                         <p className="text-gray-600">Severity: {incident.severity}</p>
                                         <p className="text-gray-600">Created at: {new Date(incident.createdAt).toLocaleString()}</p>
@@ -217,7 +301,9 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                     </div>
                                 ))}
                             </div>
-                        ) : null}
+                        ) : (
+                            <p className="text-gray-400 py-2">No incidents reported today.</p>
+                        )}
                     </div>
                 ))}
             </div>
