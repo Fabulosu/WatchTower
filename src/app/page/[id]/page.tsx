@@ -183,8 +183,8 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                         <h2 className="text-xl font-semibold text-white">{component.name}</h2>
                         <div className='flex justify-between w-full'>
                             <p className="text-gray-500">{component.description}</p>
-                            <p className={`${component.status == 1 ? "text-green-400" : component.status == 2 ? "text-orange-400" : component.status == 3 ? "text-red-400" : component.status == 4 ? "text-blue-400" : ""} font-light text-sm mb-4`}>
-                                {component.status == 1 ? "Operational" : component.status == 2 ? "Partial Outage" : component.status == 3 ? "Major Outage" : component.status == 4 ? "Under Maintenance" : ""}
+                            <p className={`${component.status == 1 ? "text-green-400" : component.status == 2 ? "text-yellow-400" : component.status == 3 ? "text-orange-400" : component.status == 4 ? "text-red-400" : component.status == 5 ? "text-blue-400" : ""} font-light text-sm mb-4`}>
+                                {component.status == 1 ? "Operational" : component.status == 2 ? "Degraded Performance" : component.status == 3 ? "Partial Outage" : component.status == 4 ? "Major Outage" : component.status == 5 ? "Under Maintenance" : ""}
                             </p>
                         </div>
 
