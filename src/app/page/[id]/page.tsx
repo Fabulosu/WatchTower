@@ -75,8 +75,6 @@ const calculateUptimeForDay = (incidents: any[], date: string) => {
     return Number(uptimePercentage);
 };
 
-
-
 const calculateTotalUptime = (uptimeData: { day: string; uptime: number }[]) => {
     const totalUptime = uptimeData.reduce((acc, stat) => acc + stat.uptime, 0) / uptimeData.length;
     return totalUptime.toFixed(2);
@@ -143,6 +141,12 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
         fetchPageData();
     }, [pageId]);
+
+    useEffect(() => {
+        if (pageData) {
+            document.title = `${pageData.name} - Status`;
+        }
+    }, [pageData]);
 
     const renderUptimeBars = (component: Component) => {
         const today = dayjs();
