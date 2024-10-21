@@ -161,7 +161,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
         return (
             <>
-                <div className="flex flex-wrap space-x-1 my-4">
+                <div className="flex flex-wrap justify-between space-x-1 my-4">
                     {uptimeData.map((stat, index) => (
                         <TooltipProvider delayDuration={200} key={index}>
                             <Tooltip>
