@@ -208,17 +208,20 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                     <h2 className="text-3xl font-semibold text-white">Ongoing Incidents</h2>
                     {openIncidents.map((incident) => (
                         <div key={incident.id} className="mt-4 bg-gray-100 p-4 rounded-lg">
-                            <p className={`font-semibold ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
+                            <p className={`font-semibold text-xl ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
                                 {incident.name}
                             </p>
-                            <p className="text-gray-600">Severity: {incident.severity}</p>
-                            <p className="text-gray-600">Created at: {new Date(incident.createdAt).toLocaleString()}</p>
+                            <p className="text-gray-600"><span className='font-semibold'>Severity: </span>{incident.severity}</p>
+                            <p className="text-gray-600"><span className='font-semibold'>Created at: </span>{new Date(incident.createdAt).toLocaleTimeString()}</p>
                             {incident.history.length > 0 && (
                                 <div className="mt-2">
-                                    <h4 className="font-semibold">Incident History</h4>
+                                    <h4 className="font-semibold text-lg">Incident History</h4>
                                     {incident.history.sort((a, b) => b.id - a.id).map((status) => (
-                                        <p key={status.id} className="text-gray-600">
-                                            {new Date(status.createdAt).toLocaleString()} - {status.statusMessage}
+                                        <p key={status.id} className="text-gray-600 flex flex-col">
+                                            <span>
+                                                <span className='font-semibold text-black'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Update" : status.status === 2 ? "Identified" : status.status === 3 ? "Monitoring" : status.status === 4 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
+                                            </span>
+                                            <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleTimeString()}</span>
                                         </p>
                                     ))}
                                 </div>
@@ -276,24 +279,25 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                         <h3 className="text-lg font-bold text-white">{dayjs(day).format('MMMM D, YYYY')}</h3>
                         <div className='w-full h-[1px] my-2 bg-gray-600' />
                         {incidents.length > 0 ? (
-                            <div className="flex flex-col gap-2 p-4 rounded-lg mt-2">
+                            <div className="flex flex-col gap-2 py-2 rounded-lg mt-2">
                                 {incidents.map((incident) => (
                                     <div key={incident.id} className='bg-gray-100 rounded-lg p-4'>
-                                        <p className={`font-semibold ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
+                                        <p className={`font-semibold text-xl ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
                                             {incident.name}
                                         </p>
-                                        <p className="text-gray-600">Severity: {incident.severity}</p>
-                                        <p className="text-gray-600">Created at: {new Date(incident.createdAt).toLocaleString()}</p>
+                                        <p className="text-gray-600"><span className='font-semibold'>Created at: </span>{new Date(incident.createdAt).toLocaleString()}</p>
                                         {incident.resolvedAt && (
-                                            <p className="text-green-600">Resolved at: {new Date(incident.resolvedAt).toLocaleString()}</p>
+                                            <p className="text-gray-600"><span className='font-semibold'>Resolved at: </span>{new Date(incident.resolvedAt).toLocaleString()}</p>
                                         )}
-
                                         {incident.history.length > 0 && (
                                             <div className="mt-2">
-                                                <h4 className="font-semibold">Incident History</h4>
+                                                <h4 className="font-semibold text-lg">Incident History</h4>
                                                 {incident.history.sort((a, b) => b.id - a.id).map((status) => (
-                                                    <p key={status.id} className="text-gray-600">
-                                                        {new Date(status.createdAt).toLocaleString()} - {status.statusMessage}
+                                                    <p key={status.id} className="text-gray-600 flex flex-col">
+                                                        <span>
+                                                            <span className='font-semibold text-black'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Update" : status.status === 2 ? "Identified" : status.status === 3 ? "Monitoring" : status.status === 4 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
+                                                        </span>
+                                                        <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleString()}</span>
                                                     </p>
                                                 ))}
                                             </div>
