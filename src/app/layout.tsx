@@ -5,7 +5,7 @@ import { Roboto } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 
 const roboto = Roboto({
-  weight: ['100', '300', '400', '700'],
+  weight: ['100', '300', '400', '500', '700', '900'],
   subsets: ['latin'],
 })
 
@@ -28,7 +28,7 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
-            enableSystem
+            // enableSystem
             disableTransitionOnChange
           >
             {children}

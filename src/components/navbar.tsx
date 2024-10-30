@@ -12,8 +12,8 @@ const Navbar = () => {
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
     return (
-        <nav className='flex items-center justify-between px-6 py-4 bg-primary h-20 text-white relative'>
-            <div className='flex items-center gap-3 w-[150px]'>
+        <nav className='flex items-center justify-between px-6 py-4 bg-card-foreground h-20 text-secondary relative'>
+            <div className='flex items-center gap-3 w-[300px]'>
                 <Link href="/" className='flex gap-3 items-center'>
                     <LuRadioTower size={30} />
                     <p className='text-xl font-bold'>WatchTower</p>
@@ -22,21 +22,21 @@ const Navbar = () => {
 
             <div className='hidden lg:flex gap-6'>
                 {["Products", "Solutions", "Community", "Resources", "Pricing", "Contact"].map((item) => (
-                    <Link key={item} href="#" className={cn(buttonVariants({ variant: "ghost" }))}>
+                    <Link key={item} href="#" className={cn(buttonVariants({ variant: "ghost" }), "rounded-full")}>
                         {item}
                     </Link>
                 ))}
             </div>
 
-            <div className='hidden lg:flex gap-3 lg:mr-6 w-[150px]'>
+            <div className='hidden lg:flex gap-3 lg:mr-6 w-[300px]'>
                 <Link
-                    className={cn(buttonVariants({ variant: "outline" }), "bg-transparent")}
+                    className={cn(buttonVariants({ variant: "outline" }), "bg-transparent hover:bg-secondary hover:text-foreground rounded-full w-60")}
                     href="#"
                 >
                     Sign In
                 </Link>
                 <Link
-                    className={cn(buttonVariants({ variant: "secondary" }))}
+                    className={cn(buttonVariants({ variant: "secondary" }), "rounded-full w-60")}
                     href="#"
                 >
                     Register
@@ -48,7 +48,7 @@ const Navbar = () => {
             </button>
 
             <div
-                className={`absolute top-full left-0 right-0 bg-primary lg:hidden flex flex-col items-center gap-4 py-4 z-10 shadow-lg transition-transform duration-500 ${menuOpen ? 'transform translate-y-0 opacity-100' : 'transform -translate-y-full opacity-0'
+                className={`absolute top-full left-0 right-0 bg-card-foreground lg:hidden flex flex-col items-center gap-4 py-4 z-10 shadow-lg transition-transform duration-500 ${menuOpen ? 'transform translate-y-0 opacity-100' : 'transform -translate-y-full opacity-0'
                     }`}
             >
                 {menuOpen && ["Products", "Solutions", "Community", "Resources", "Pricing", "Contact"].map((item) => (
