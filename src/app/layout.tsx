@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AuthProvider from "@/components/session-provider";
-import { Roboto } from 'next/font/google'
+import { Roboto } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
 
 const roboto = Roboto({
   weight: ['100', '300', '400', '700'],
@@ -21,12 +22,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${roboto.className} antialised bg-[#131a26]`}
+        className={`${roboto.className} antialised bg-background`}
       >
         <AuthProvider>
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+//[#131a26]
