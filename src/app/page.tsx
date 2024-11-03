@@ -3,6 +3,7 @@ import Footer from "@/components/footer";
 import { LuRadioTower } from "react-icons/lu";
 import { IoMdAlert } from "react-icons/io";
 import { MdAutoGraph } from "react-icons/md";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -13,12 +14,15 @@ export default function HomePage() {
           <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-snug">
             The world’s best free <span className="text-green-400">uptime monitoring</span> service.
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl pb-6 text-muted-foreground max-w-2xl mx-auto">
             Everything is totally <span className="text-green-400 font-semibold">FREE</span>.
           </p>
-          <button className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full mt-4 text-lg font-semibold shadow-md transform hover:scale-105 transition duration-300">
+          <Link
+            href="/register"
+            className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full mt-4 text-lg font-semibold shadow-md transform hover:scale-105 transition duration-300"
+          >
             Start monitoring your apps
-          </button>
+          </Link>
         </section>
         <section className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-8">
           {[

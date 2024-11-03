@@ -5,8 +5,11 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { buttonVariants } from './ui/button';
 import { FiMenu, FiX } from 'react-icons/fi';
+import { useSession } from 'next-auth/react';
 
 const Navbar = () => {
+    const { data: session } = useSession();
+
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -28,19 +31,30 @@ const Navbar = () => {
                 ))}
             </div>
 
-            <div className='hidden lg:flex gap-3 lg:mr-6 w-[300px]'>
-                <Link
-                    className={cn(buttonVariants({ variant: "outline" }), "bg-transparent hover:bg-secondary hover:text-foreground rounded-full w-60")}
-                    href="#"
-                >
-                    Sign In
-                </Link>
-                <Link
-                    className={cn(buttonVariants({ variant: "secondary" }), "rounded-full w-60")}
-                    href="#"
-                >
-                    Register
-                </Link>
+            <div className='hidden lg:flex gap-3 lg:mr-6 w-[300px] justify-end'>
+                {session ? (
+                    <Link
+                        className={cn(buttonVariants({ variant: "secondary" }), "rounded-full w-30")}
+                        href="/dashboard"
+                    >
+                        Dashboard
+                    </Link>
+                ) : (
+                    <>
+                        <Link
+                            className={cn(buttonVariants({ variant: "outline" }), "bg-transparent hover:bg-secondary hover:text-foreground rounded-full w-60")}
+                            href="/login"
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            className={cn(buttonVariants({ variant: "secondary" }), "rounded-full w-60")}
+                            href="/register"
+                        >
+                            Register
+                        </Link>
+                    </>
+                )}
             </div>
 
             <button className='lg:hidden text-white' onClick={toggleMenu}>
@@ -58,18 +72,29 @@ const Navbar = () => {
                 ))}
                 {menuOpen && (
                     <div className='flex gap-3'>
-                        <Link
-                            className={cn(buttonVariants({ variant: "outline" }), "bg-transparent")}
-                            href="#"
-                        >
-                            Sign In
-                        </Link>
-                        <Link
-                            className={cn(buttonVariants({ variant: "secondary" }))}
-                            href="#"
-                        >
-                            Register
-                        </Link>
+                        {session ? (
+                            <Link
+                                className={cn(buttonVariants({ variant: "secondary" }))}
+                                href="/dashboard"
+                            >
+                                Dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    className={cn(buttonVariants({ variant: "outline" }), "bg-transparent")}
+                                    href="/login"
+                                >
+                                    Sign In
+                                </Link>
+                                <Link
+                                    className={cn(buttonVariants({ variant: "secondary" }))}
+                                    href="/register"
+                                >
+                                    Register
+                                </Link>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
