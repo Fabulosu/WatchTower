@@ -35,7 +35,7 @@ const Navbar = () => {
                 {session ? (
                     <Link
                         className={cn(buttonVariants({ variant: "secondary" }), "rounded-full w-30")}
-                        href="/dashboard"
+                        href="/manage"
                     >
                         Dashboard
                     </Link>
