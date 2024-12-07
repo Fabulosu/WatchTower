@@ -1,16 +1,13 @@
+"use client";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { IncidentsTab } from "./incidents-tab";
+import { OpenIncidentsTab } from "./openincidents-tab";
 
-type DashboardContentProps = {
-    pageData: any;
-    selectedPage: { label: string; value: string; } | null;
-};
-
-export function DashboardContent({ pageData, selectedPage }: DashboardContentProps) {
-    if (!selectedPage) {
+export function DashboardContent({ pageData }: { pageData: { name: string; id: number; } | null; }) {
+    console.log(pageData)
+    if (!pageData) {
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -31,7 +28,7 @@ export function DashboardContent({ pageData, selectedPage }: DashboardContentPro
             className="w-[80vw] mt-6 flex flex-col items-center"
         >
             <div className="mb-6">
-                <h2 className="text-2xl font-bold">{selectedPage.label}</h2>
+                <h2 className="text-2xl font-bold">{pageData.name}</h2>
             </div>
 
             <Tabs defaultValue="open" className="w-[50vw]">
@@ -63,24 +60,16 @@ export function DashboardContent({ pageData, selectedPage }: DashboardContentPro
                 </TabsList>
 
                 <TabsContent value="open" className="mt-6">
-                    <div className="flex flex-col items-center justify-center py-16 px-4 rounded-xl bg-card/30 backdrop-blur-sm border border-card-foreground/10">
-                        <h3 className="text-2xl font-semibold mb-2">No open incidents</h3>
-                        <p className="text-muted-foreground text-center mb-6">
-                            New incidents and scheduled maintenance events will appear here
-                        </p>
-                        <Button
-                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
-                        >
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Open Incident
-                        </Button>
+                    <div className="rounded-xl bg-card/30 backdrop-blur-sm border border-card-foreground/10 p-6">
+                        <h3 className="text-xl font-semibold mb-4">Open incidents</h3>
+                        <OpenIncidentsTab pageId={pageData?.id} />
                     </div>
                 </TabsContent>
 
                 <TabsContent value="incidents" className="mt-6">
                     <div className="rounded-xl bg-card/30 backdrop-blur-sm border border-card-foreground/10 p-6">
                         <h3 className="text-xl font-semibold mb-4">Incident History</h3>
-                        <IncidentsTab pageId={selectedPage?.value} />
+                        <IncidentsTab pageId={pageData?.id} />
                     </div>
                 </TabsContent>
 
@@ -93,7 +82,6 @@ export function DashboardContent({ pageData, selectedPage }: DashboardContentPro
                 <TabsContent value="templates" className="mt-6">
                     <div className="rounded-xl bg-card/30 backdrop-blur-sm border border-card-foreground/10 p-6">
                         <h3 className="text-xl font-semibold mb-4">Incident Templates</h3>
-
                     </div>
                 </TabsContent>
             </Tabs>

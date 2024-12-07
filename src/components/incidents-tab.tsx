@@ -1,3 +1,5 @@
+"use client";
+
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Eye, Trash2 } from "lucide-react";
 import { format } from "date-fns";
@@ -74,7 +76,7 @@ const IncidentCard = ({ incident, onView, onDelete }: {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-card/50 backdrop-blur-sm border border-card-foreground/10 rounded-xl p-6 mb-4"
+            className="bg-card/50 backdrop-blur-sm border border-card-foreground/10 rounded-lg p-6 mb-4"
         >
             <div className="flex justify-between items-start">
                 <div className="space-y-2">
@@ -116,7 +118,7 @@ const IncidentCard = ({ incident, onView, onDelete }: {
 };
 
 // Incidents Tab Content
-export function IncidentsTab({ pageId }: { pageId: string }) {
+export function IncidentsTab({ pageId }: { pageId: number }) {
     const { data: session } = useSession();
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);

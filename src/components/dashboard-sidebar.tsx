@@ -2,6 +2,8 @@
 
 import {
     Sidebar,
+    SidebarContent,
+    SidebarGroup,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -13,8 +15,14 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, AlertCircle, Layers } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import axios from "axios";
+import { BACKEND_URL } from "@/lib/data";
+import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 type Page = {
     value: string;
@@ -22,18 +30,75 @@ type Page = {
 };
 
 type AppSidebarProps = {
-    pages: Page[];
-    onChange: (selectedValue: string) => void;
     className?: string;
+    params: { id: string };
 };
 
-export function AppSidebar({ pages, onChange, className }: AppSidebarProps) {
+const NavLink = ({ href, className, children }: {
+    href: string;
+    className?: string;
+    children: React.ReactNode;
+}) => {
+    const pathname = usePathname();
+    const isActive = pathname === href;
+
+    return (
+        <Link
+            href={href}
+            className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
+                "hover:bg-card/80",
+                isActive
+                    ? "text-green-500 bg-green-500/10"
+                    : "text-muted-foreground hover:text-foreground",
+                className
+            )}
+        >
+            {children}
+        </Link>
+    );
+};
+
+export function AppSidebar({ className, params }: AppSidebarProps) {
+    const router = useRouter();
+    const { data: session } = useSession();
+
     const [selectedPage, setSelectedPage] = useState<Page | null>(null);
+    const [pages, setPages] = useState<Page[] | null>(null);
+
+    const config = {
+        headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
+    };
+
+    useEffect(() => {
+        if (session?.user.id) {
+            const getUserPages = async () => {
+                try {
+                    const response = await axios.get(`${BACKEND_URL}/page/user/${session?.user.id}`, config);
+                    const fetchedPages: Page[] =
+                        response.data?.map((page: { id: string; name: string }) => ({
+                            value: page.id,
+                            label: page.name,
+                        })) || [];
+
+
+                    setPages(fetchedPages);
+
+                    const selected = fetchedPages.find((page: Page) => page.value == params.id) || null;
+                    setSelectedPage(selected);
+                } catch (error) {
+                    console.error("Error fetching pages:", error);
+                }
+            };
+
+            getUserPages();
+        }
+    }, [session?.user.id, params.id]);
 
     const handleSelect = (value: string) => {
-        const selected = pages.find((page) => page.value === value) || null;
+        const selected = pages?.find((page) => page.value === value) || null;
         setSelectedPage(selected);
-        onChange(value);
+        router.replace(`/pages/${selected?.value}/incidents`);
     };
 
     return (
@@ -43,13 +108,13 @@ export function AppSidebar({ pages, onChange, className }: AppSidebarProps) {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton>
+                                <SidebarMenuButton className="w-full text-left">
                                     {selectedPage ? selectedPage.label : "Select Page"}
-                                    <ChevronDown className="ml-auto" />
+                                    <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-                                {pages.map((page) => (
+                                {pages?.map((page) => (
                                     <DropdownMenuItem
                                         key={page.value}
                                         onClick={() => handleSelect(page.value)}
@@ -62,6 +127,27 @@ export function AppSidebar({ pages, onChange, className }: AppSidebarProps) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
+            <SidebarContent>
+                <SidebarGroup className="space-y-1 px-2">
+                    {selectedPage && (
+                        <>
+                            <NavLink href={`/pages/${selectedPage.value}/incidents`}>
+                                <AlertCircle className="h-4 w-4" />
+                                Incidents
+                            </NavLink>
+                            <NavLink href={`/pages/${selectedPage.value}/components`}>
+                                <Layers className="h-4 w-4" />
+                                Components
+                            </NavLink>
+                        </>
+                    )}
+                    {!selectedPage && (
+                        <div className="px-3 py-2 text-sm text-muted-foreground">
+                            Select a page to view options
+                        </div>
+                    )}
+                </SidebarGroup>
+            </SidebarContent>
         </Sidebar>
     );
 }
