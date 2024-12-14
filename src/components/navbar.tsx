@@ -32,11 +32,11 @@ const Navbar = () => {
             className={cn(
                 'fixed w-full z-50 transition-all duration-300',
                 scrolled
-                    ? 'bg-card-foreground/90 backdrop-blur-lg shadow-lg'
-                    : 'bg-card-foreground'
+                    ? 'bg-card-foreground/90 dark:bg-card/90 backdrop-blur-lg shadow-lg'
+                    : 'bg-card-foreground dark:bg-card'
             )}
         >
-            <div className='max-w-7xl mx-auto flex items-center justify-between px-6 py-4 h-20 text-secondary'>
+            <div className='max-w-7xl mx-auto flex items-center justify-between px-6 py-4 h-20 text-secondary text-white'>
                 <motion.div
                     whileHover={{ scale: 1.05 }}
                     className='flex items-center gap-3'

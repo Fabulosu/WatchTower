@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { BACKEND_URL } from "@/lib/data";
-import { FaSpinner } from "react-icons/fa6";
 
 export default function Pages() {
     const router = useRouter();
@@ -43,5 +42,9 @@ export default function Pages() {
         fetchPagesAndRedirect();
     }, [session?.user.id]);
 
-    return <FaSpinner />;
+    return (
+        <div className="min-h-screen flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
+        </div>
+    );
 }
