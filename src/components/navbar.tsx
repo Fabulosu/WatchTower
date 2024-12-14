@@ -75,7 +75,7 @@ const Navbar = () => {
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
                                 className={cn(buttonVariants({ variant: "secondary" }), "rounded-full")}
-                                href="/manage"
+                                href="/pages"
                             >
                                 Dashboard
                             </Link>
@@ -156,7 +156,7 @@ const Navbar = () => {
                                 {session ? (
                                     <Link
                                         className={cn(buttonVariants({ variant: "secondary" }), "rounded-full")}
-                                        href="/dashboard"
+                                        href="/pages"
                                     >
                                         Dashboard
                                     </Link>
