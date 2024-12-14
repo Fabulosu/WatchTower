@@ -27,7 +27,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             // enableSystem
             disableTransitionOnChange
           >
@@ -38,4 +38,3 @@ export default function RootLayout({
     </html>
   );
 }
-//[#131a26]
