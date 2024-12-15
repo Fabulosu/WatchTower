@@ -4,6 +4,7 @@ import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -23,6 +24,7 @@ import { BACKEND_URL } from "@/lib/data";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 type Page = {
     value: string;
@@ -40,7 +42,7 @@ const NavLink = ({ href, className, children }: {
     children: React.ReactNode;
 }) => {
     const pathname = usePathname();
-    const isActive = pathname === href;
+    const isActive = pathname.includes(href);
 
     return (
         <Link
@@ -129,6 +131,7 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup className="space-y-1 px-2">
+                    <SidebarGroupLabel className="font-bold">Manage your page</SidebarGroupLabel>
                     {selectedPage && (
                         <>
                             <NavLink href={`/pages/${selectedPage.value}/incidents`}>
@@ -145,6 +148,17 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
                         <div className="px-3 py-2 text-sm text-muted-foreground">
                             Select a page to view options
                         </div>
+                    )}
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel className="font-bold">Shortcuts</SidebarGroupLabel>
+                    {selectedPage && (
+                        <>
+                            <NavLink href={`/page/${selectedPage.value}`}>
+                                View status page
+                                <FaExternalLinkAlt className="h-4 w-4" />
+                            </NavLink>
+                        </>
                     )}
                 </SidebarGroup>
             </SidebarContent>

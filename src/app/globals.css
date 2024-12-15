@@ -42,7 +42,7 @@ body {
     --muted-foreground: 220 15% 45%;
 
     /* Accent (Green) */
-    --accent: 145 47% 29%;
+    --accent: 145 63% 42%;
     /* Same as primary */
     --accent-foreground: 0 0% 100%;
 
@@ -108,7 +108,7 @@ body {
     --muted-foreground: 220 10% 70%;
 
     /* Accent (Green) */
-    --accent: 145 47% 39%;
+    --accent: 145 63% 42%;
     /* Same as primary */
     --accent-foreground: 220 10% 97%;
 

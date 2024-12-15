@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Incident {
     id: number;
@@ -31,10 +32,9 @@ interface Component {
 
 const statusMap: { [key: string]: string } = {
     "0": "Investigating",
-    "1": "Update",
-    "2": "Identified",
-    "3": "Monitoring",
-    "4": "Resolved",
+    "1": "Identified",
+    "2": "Monitoring",
+    "3": "Resolved",
 };
 
 const getLatestStatus = (history: IncidentStatus[]) => {
@@ -95,10 +95,6 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
         }
     }, [pageId, session?.backendTokens.accessToken]);
 
-    const handleView = (id: number) => {
-        console.log('View incident:', id);
-    };
-
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -153,13 +149,12 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                                 </span>
                             </div>
                         </div>
-                        <Button
-                            variant="outline"
-                            className="hover:bg-card/80"
-                            onClick={() => handleView(incident.id)}
+                        <Link
+                            href={`incidents/${incident.id}`}
+                            className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
                         >
                             Update Incident
-                        </Button>
+                        </Link>
                     </div>
 
                     <div className="mt-4">
