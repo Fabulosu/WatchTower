@@ -157,43 +157,65 @@ export default function StatusPage({ params }: { params: { id: number } }) {
             today.subtract(i, 'day').format('YYYY-MM-DD')
         );
 
-        const uptimeData = last90Days.map((date) => {
-            return {
-                day: date,
-                uptime: calculateUptimeForDay(component.incidents, date),
-            };
-        });
+        const uptimeData = last90Days.map((date) => ({
+            day: date,
+            uptime: calculateUptimeForDay(component.incidents, date),
+        }));
 
         const totalUptime = calculateTotalUptime(uptimeData);
 
         return (
             <>
-                <div className="flex flex-wrap justify-between space-x-1 my-4">
-                    {uptimeData.map((stat, index) => (
-                        <TooltipProvider delayDuration={200} key={index}>
-                            <Tooltip>
-                                <TooltipTrigger className='hover:cursor-default'>
-                                    <div
-                                        className={`w-[2px] md:w-1 lg:w-2 h-8 rounded-sm hover:scale-125 transition-all ${stat.uptime >= 90 ? 'bg-green-500' : stat.uptime >= 75 ? 'bg-yellow-500' : stat.uptime >= 50 ? 'bg-orange-500' : 'bg-red-500'
-                                            }`}
-                                    ></div>
-                                </TooltipTrigger>
-                                <TooltipContent side='bottom' className='bg-popover drop-shadow-lg border-0 duration-0'>
-                                    <p className='font-semibold text-card-foreground'>{stat.day}</p>
-                                    <p className='text-card-foreground'>Uptime {stat.uptime}%</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    )).reverse()}
+                <div className="relative w-full">
+                    <div className="grid auto-cols-fr grid-flow-col gap-[1px] my-4 w-full">
+                        {uptimeData.map((stat, index) => (
+                            <TooltipProvider delayDuration={200} key={index}>
+                                <Tooltip>
+                                    <TooltipTrigger className="w-full hover:cursor-default">
+                                        <div className="flex justify-center">
+                                            <div
+                                                className={`w-full rounded-lg h-8 transform hover:scale-125 transition-all ${stat.uptime >= 90
+                                                    ? 'bg-green-500'
+                                                    : stat.uptime >= 75
+                                                        ? 'bg-yellow-500'
+                                                        : stat.uptime >= 50
+                                                            ? 'bg-orange-500'
+                                                            : 'bg-red-500'
+                                                    }`}
+                                                style={{
+                                                    minWidth: '2px',
+                                                    maxWidth: '8px'
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                        side='bottom'
+                                        className='bg-popover drop-shadow-lg border-0 duration-0'
+                                    >
+                                        <p className='font-semibold text-card-foreground'>
+                                            {stat.day}
+                                        </p>
+                                        <p className='text-card-foreground'>
+                                            Uptime {stat.uptime}%
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )).reverse()}
+                    </div>
                 </div>
                 <div className="flex items-center w-full">
                     <p className="text-muted-foreground min-w-[100px]">90 days ago</p>
                     <div className="flex-1 h-[1px] mx-4 bg-muted-foreground"></div>
-                    <p className="text-center text-muted-foreground">{totalUptime}% uptime</p>
-                    <div className="flex-1 flex-grow h-[1px] mx-4 bg-muted-foreground"></div>
-                    <p className="text-muted-foreground min-w-[100px] text-right">Today</p>
+                    <p className="text-center text-muted-foreground">
+                        {totalUptime}% uptime
+                    </p>
+                    <div className="flex-1 h-[1px] mx-4 bg-muted-foreground"></div>
+                    <p className="text-muted-foreground min-w-[100px] text-right">
+                        Today
+                    </p>
                 </div>
-
             </>
         );
     };
@@ -212,22 +234,22 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                 <h1 className="text-3xl font-bold mb-6 text-foreground">{pageData.name}</h1>
 
                 {openIncidents.length > 0 ? (
-                    <div className="bg-gray-800 p-4 w-full rounded-lg shadow-2xl">
+                    <div className="bg-card p-4 w-full rounded-lg shadow-2xl">
                         <h2 className="text-3xl font-semibold text-foreground">Ongoing Incidents</h2>
                         {openIncidents.map((incident) => (
-                            <div key={incident.id} className="mt-4 bg-gray-100 p-4 rounded-lg">
+                            <div key={incident.id} className="mt-4 bg-secondary p-4 rounded-lg">
                                 <p className={`font-semibold text-xl ${incident.severity == "Minor" ? "text-yellow-600" : incident.severity == "Major" ? "text-orange-600" : incident.severity == "Critical" ? "text-red-600" : ""}`}>
                                     {incident.name}
                                 </p>
-                                <p className="text-gray-600"><span className='font-semibold'>Severity: </span>{incident.severity}</p>
-                                <p className="text-gray-600"><span className='font-semibold'>Created at: </span>{new Date(incident.createdAt).toLocaleTimeString()}</p>
+                                <p className="text-muted-foreground"><span className='font-semibold'>Severity: </span>{incident.severity}</p>
+                                <p className="text-muted-foreground"><span className='font-semibold'>Created at: </span>{new Date(incident.createdAt).toLocaleTimeString()}</p>
                                 {incident.history.length > 0 && (
                                     <div className="mt-2">
                                         <h4 className="font-semibold text-lg">Incident History</h4>
                                         {incident.history.sort((a, b) => b.id - a.id).map((status) => (
-                                            <p key={status.id} className="text-gray-600 flex flex-col">
+                                            <p key={status.id} className="text-muted-foreground flex flex-col">
                                                 <span>
-                                                    <span className='font-semibold text-black'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Update" : status.status === 2 ? "Identified" : status.status === 3 ? "Monitoring" : status.status === 4 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
+                                                    <span className='font-semibold text-muted-foreground'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Update" : status.status === 2 ? "Identified" : status.status === 3 ? "Monitoring" : status.status === 4 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
                                                 </span>
                                                 <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleTimeString()}</span>
                                             </p>
