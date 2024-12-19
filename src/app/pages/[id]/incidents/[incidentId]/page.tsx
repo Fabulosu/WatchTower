@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
+import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 
 interface Incident {
     id: number;
@@ -65,10 +67,10 @@ const statusOptions = [
 ];
 
 const componentStatusOptions = [
-    { value: "1", label: "Operational" },
-    { value: "2", label: "Degraded Performance" },
-    { value: "3", label: "Partial Outage" },
-    { value: "4", label: "Major Outage" },
+    { value: "1", icon: <FaCheckCircle className="text-green-500" size={16} />, label: "Operational" },
+    { value: "2", icon: <FaMinusCircle className="text-yellow-500" size={16} />, label: "Degraded Performance" },
+    { value: "3", icon: <FaCircleExclamation className="text-orange-500" size={16} />, label: "Partial Outage" },
+    { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
 ];
 
 export default function UpdateIncident({ params }: { params: { incidentId: number } }) {
@@ -114,13 +116,16 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
 
             const updateData = {
                 severity: selectedSeverity,
-                status: selectedStatus,
-                message: updateMessage,
-                components: affectedComponents,
+                statusCode: parseInt(selectedStatus),
+                updateMessage: updateMessage,
+                components: affectedComponents.map(component => ({
+                    id: component.id,
+                    status: parseInt(component.status),
+                })),
             };
 
             await axios.put(
-                `http://localhost:8000/incident/${incidentId}`,
+                `http://localhost:8000/incident/status/${incidentId}`,
                 updateData,
                 config
             );
@@ -171,7 +176,6 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
             <div className="w-[45vw] flex justify-between pb-10">
                 <h1 className="text-2xl font-bold">{incident.name}</h1>
                 <div className="flex items-center gap-4">
-                    <p></p>
                     <Select
                         value={selectedSeverity}
                         onValueChange={setSelectedSeverity}
@@ -209,38 +213,42 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                             </div>
                             <p className="text-sm text-muted-foreground">{update.statusMessage}</p>
                         </div>
-                    ))}
+                    )).reverse()}
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4">
+            <div className="w-[45vw] space-y-4 py-2">
                 <h2 className="text-xl font-semibold">Add New Update</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
-                <div className="space-y-4">
-                    <Label htmlFor="iStatus">Incident Status</Label>
-                    <Select
-                        value={selectedStatus}
-                        onValueChange={setSelectedStatus}
-                    >
-                        <SelectTrigger className="w-[200px]" id="iStatus">
-                            <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {statusOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Label htmlFor="updateMessage">Message</Label>
-                    <Textarea
-                        id="updateMessage"
-                        placeholder="Update message..."
-                        value={updateMessage}
-                        onChange={(e) => setUpdateMessage(e.target.value)}
-                        className="min-h-[100px]"
-                    />
+                <div className="flex flex-col gap-4">
+                    <div>
+                        <Label htmlFor="iStatus">Incident Status</Label>
+                        <Select
+                            value={selectedStatus}
+                            onValueChange={setSelectedStatus}
+                        >
+                            <SelectTrigger className="w-[200px]" id="iStatus">
+                                <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {statusOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="updateMessage" className="mt-2">Message</Label>
+                        <Textarea
+                            id="updateMessage"
+                            placeholder="Update message..."
+                            value={updateMessage}
+                            onChange={(e) => setUpdateMessage(e.target.value)}
+                            className="min-h-[50px] drop-shadow-lg"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -251,7 +259,7 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                     {affectedComponents.map((component) => (
                         <div
                             key={component.id}
-                            className="flex items-center justify-between p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10"
+                            className="flex items-center justify-between p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg"
                         >
                             <span>{component.name}</span>
                             <Select
@@ -266,7 +274,10 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                                 <SelectContent>
                                     {componentStatusOptions.map((option) => (
                                         <SelectItem key={option.value} value={option.value}>
-                                            {option.label}
+                                            <div className="flex flex-row items-center gap-2">
+                                                {option.icon}
+                                                <p>{option.label}</p>
+                                            </div>
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
