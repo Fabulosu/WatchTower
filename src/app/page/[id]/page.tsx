@@ -151,13 +151,32 @@ export default function StatusPage({ params }: { params: { id: number } }) {
         }
     }, [pageData]);
 
+    const today = dayjs();
+    const [daysToShow, setDaysToShow] = useState(
+        window.innerWidth <= 767 ? 30 : window.innerWidth <= 1024 ? 60 : 90
+    );
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 768) {
+                setDaysToShow(30);
+            } else if (window.innerWidth <= 1024) {
+                setDaysToShow(60);
+            } else {
+                setDaysToShow(90);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const renderUptimeBars = (component: Component) => {
-        const today = dayjs();
-        const last90Days = Array.from({ length: 90 }, (_, i) =>
+        const lastDays = Array.from({ length: daysToShow }, (_, i) =>
             today.subtract(i, 'day').format('YYYY-MM-DD')
         );
 
-        const uptimeData = last90Days.map((date) => ({
+        const uptimeData = lastDays.map((date) => ({
             day: date,
             uptime: calculateUptimeForDay(component.incidents, date),
         }));
@@ -206,13 +225,13 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                     </div>
                 </div>
                 <div className="flex items-center w-full">
-                    <p className="text-muted-foreground min-w-[100px]">90 days ago</p>
+                    <p className="text-muted-foreground sm:min-w-[100px]">{daysToShow} days ago</p>
                     <div className="flex-1 h-[1px] mx-4 bg-muted-foreground"></div>
                     <p className="text-center text-muted-foreground">
                         {totalUptime}% uptime
                     </p>
                     <div className="flex-1 h-[1px] mx-4 bg-muted-foreground"></div>
-                    <p className="text-muted-foreground min-w-[100px] text-right">
+                    <p className="text-muted-foreground sm:min-w-[100px] text-right">
                         Today
                     </p>
                 </div>
@@ -230,7 +249,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
     return (
         <>
-            <main className="container flex flex-col gap-2 lg:w-[58vw] items-center mx-auto py-8">
+            <main className="px-0 sm:container flex flex-col gap-2 lg:w-[58vw] items-center mx-auto py-8">
                 <h1 className="text-3xl font-bold mb-6 text-foreground">{pageData.name}</h1>
 
                 {openIncidents.length > 0 ? (
