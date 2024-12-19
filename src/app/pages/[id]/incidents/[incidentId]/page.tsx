@@ -98,7 +98,6 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                 `http://localhost:8000/incident/${incidentId}`,
                 config
             );
-            console.log(response.data)
             setIncident(response.data);
             setSelectedSeverity(response.data.severity);
             setAffectedComponents(response.data.components);
