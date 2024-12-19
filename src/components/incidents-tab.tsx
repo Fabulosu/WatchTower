@@ -7,6 +7,19 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "./ui/button";
 
 interface Incident {
     id: number;
@@ -89,13 +102,40 @@ const IncidentCard = ({ incident, onView, onDelete }: {
                             <Eye className="mr-2 h-4 w-4" />
                             View
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => onDelete(incident.id)}
-                            className="text-red-500 focus:text-red-500"
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                        </DropdownMenuItem>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem className="text-red-500 focus:text-red-500" onSelect={(e) => e.preventDefault()}>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the
+                                        incident and all its updates.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={async () => {
+                                            await onDelete(incident.id);
+                                            if (document.activeElement instanceof HTMLElement) {
+                                                document.activeElement.blur();
+                                            }
+                                            setTimeout(() => {
+                                                document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                            }, 0);
+                                        }}
+                                        className="bg-red-500 hover:bg-red-600"
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -114,8 +154,8 @@ const IncidentCard = ({ incident, onView, onDelete }: {
     );
 };
 
-// Incidents Tab Content
 export function IncidentsTab({ pageId }: { pageId: number }) {
+    const router = useRouter();
     const { data: session } = useSession();
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
@@ -142,19 +182,19 @@ export function IncidentsTab({ pageId }: { pageId: number }) {
         fetchIncidents();
     }, [pageId, session?.backendTokens.accessToken]);
 
-
     const handleView = (id: number) => {
-        console.log('View incident:', id);
+        router.push(`incidents/${id}`);
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm('Are you sure you want to delete this incident?')) {
-            try {
-                await axios.delete(`http://localhost:8000/incident/${id}`);
-                setIncidents(incidents.filter(incident => incident.id !== id));
-            } catch (err) {
-                console.error('Error deleting incident:', err);
-            }
+        try {
+            const config = {
+                headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
+            };
+            await axios.delete(`http://localhost:8000/incident/${id}`, config);
+            setIncidents(incidents.filter(incident => incident.id !== id));
+        } catch (err) {
+            console.error('Error deleting incident:', err);
         }
     };
 
