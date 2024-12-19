@@ -59,9 +59,9 @@ const severityOptions = [
 
 const statusOptions = [
     { value: "0", label: "Investigating" },
-    { value: "2", label: "Identified" },
-    { value: "3", label: "Monitoring" },
-    { value: "4", label: "Resolved" },
+    { value: "1", label: "Identified" },
+    { value: "2", label: "Monitoring" },
+    { value: "3", label: "Resolved" },
 ];
 
 const componentStatusOptions = [

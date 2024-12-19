@@ -36,25 +36,22 @@ const getLatestStatus = (history: IncidentStatus[]) => {
 
 const statusMap: { [key: string]: string } = {
     "0": "Investigating",
-    "1": "Update",
-    "2": "Identified",
-    "3": "Monitoring",
-    "4": "Resolved",
+    "1": "Identified",
+    "2": "Monitoring",
+    "3": "Resolved",
 };
 
 const StatusBadge = ({ status, severity }: { status: string; severity: string }) => {
     const getStatusColor = () => {
         switch (status) {
+            case "0":
+                return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
             case "1":
                 return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
             case "2":
-                return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
-            case "3":
                 return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-            case "4":
+            case "3":
                 return 'bg-green-500/10 text-green-500 border-green-500/20';
-            case "0":
-                return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
         }
     };
 
