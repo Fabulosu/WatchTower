@@ -217,13 +217,6 @@ export default function CreateIncident({ params }: { params: { id: number } }) {
                     >
                         {selectedComponents.length === components.length ? "Deselect All" : "Select All"}
                     </Button>
-
-                    <Button
-                        onClick={() => console.log(selectedComponents)}
-                        variant="link"
-                    >
-                        Jemecherie
-                    </Button>
                 </div>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="space-y-4">
