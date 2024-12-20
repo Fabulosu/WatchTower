@@ -4,6 +4,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { IncidentsTab } from "./incidents-tab";
 import { OpenIncidentsTab } from "./openincidents-tab";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "./ui/button";
 
 export function DashboardContent({ pageData }: { pageData: { name: string; id: number; } | null; }) {
     console.log(pageData)
@@ -68,7 +71,15 @@ export function DashboardContent({ pageData }: { pageData: { name: string; id: n
 
                 <TabsContent value="incidents" className="mt-6">
                     <div className="rounded-xl bg-card/30 backdrop-blur-sm border border-card-foreground/10 p-6">
-                        <h3 className="text-xl font-semibold mb-4">Incident History</h3>
+                        <div className="w-full flex justify-between">
+                            <h3 className="text-xl font-semibold mb-4">Incident History</h3>
+                            <Link
+                                href="incidents/create"
+                                className={cn(buttonVariants({ variant: "default" }), "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white")}
+                            >
+                                Create Incident
+                            </Link>
+                        </div>
                         <IncidentsTab pageId={pageData?.id} />
                     </div>
                 </TabsContent>

@@ -116,12 +116,13 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                 <p className="text-muted-foreground text-center mb-6">
                     New incidents and scheduled maintenance events will appear here
                 </p>
-                <Button
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                <Link
+                    href={"incidents/create"}
+                    className={cn(buttonVariants({ variant: "default" }), "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white")}
                 >
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Open Incident
-                </Button>
+                </Link>
             </div>
         );
     }
