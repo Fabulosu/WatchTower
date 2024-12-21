@@ -268,7 +268,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                         {incident.history.sort((a, b) => b.id - a.id).map((status) => (
                                             <p key={status.id} className="text-muted-foreground flex flex-col">
                                                 <span>
-                                                    <span className='font-semibold text-muted-foreground'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Update" : status.status === 2 ? "Identified" : status.status === 3 ? "Monitoring" : status.status === 4 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
+                                                    <span className='font-semibold text-muted-foreground'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Identified" : status.status === 2 ? "Monitoring" : status.status === 3 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
                                                 </span>
                                                 <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleTimeString()}</span>
                                             </p>
@@ -357,7 +357,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                                             <p key={status.id} className="text-muted-foreground flex flex-col">
                                                                 <span>
                                                                     <span className={`font-semibold text-card-foreground`}>
-                                                                        {status.status === 0 ? "Investigating" : status.status === 1 ? "Update" : status.status === 2 ? "Identified" : status.status === 3 ? "Monitoring" : status.status === 4 ? "Resolved" : ""}
+                                                                        {status.status === 0 ? "Investigating" : status.status === 1 ? "Identified" : status.status === 2 ? "Monitoring" : status.status === 3 ? "Resolved" : ""}
                                                                     </span>
                                                                     {" "} - {status.statusMessage}
                                                                 </span>

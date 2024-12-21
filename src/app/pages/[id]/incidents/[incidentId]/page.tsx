@@ -268,7 +268,7 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                                     updateComponentStatus(component.id, value)
                                 }
                             >
-                                <SelectTrigger className="w-[200px]">
+                                <SelectTrigger className="w-[220px]">
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent>
