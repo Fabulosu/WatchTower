@@ -20,6 +20,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
+import { BACKEND_URL } from "@/lib/data";
 
 interface Incident {
     id: number;
@@ -168,7 +169,7 @@ export function IncidentsTab({ pageId }: { pageId: number }) {
                     headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
                 };
 
-                const response = await axios.get(`http://localhost:8000/incident/page/${pageId}`, config);
+                const response = await axios.get(BACKEND_URL + `/incident/page/${pageId}`, config);
                 const fetchedIncidents = response.data;
                 setIncidents(fetchedIncidents);
             } catch (err) {
@@ -191,7 +192,7 @@ export function IncidentsTab({ pageId }: { pageId: number }) {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
-            await axios.delete(`http://localhost:8000/incident/${id}`, config);
+            await axios.delete(BACKEND_URL + `/incident/${id}`, config);
             setIncidents(incidents.filter(incident => incident.id !== id));
         } catch (err) {
             console.error('Error deleting incident:', err);

@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
+import { BACKEND_URL } from "@/lib/data";
 
 interface Incident {
     id: number;
@@ -95,7 +96,7 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
             const response = await axios.get(
-                `http://localhost:8000/incident/${incidentId}`,
+                BACKEND_URL + `/incident/${incidentId}`,
                 config
             );
             setIncident(response.data);
@@ -124,7 +125,7 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
             };
 
             await axios.put(
-                `http://localhost:8000/incident/status/${incidentId}`,
+                BACKEND_URL + `/incident/status/${incidentId}`,
                 updateData,
                 config
             );
@@ -142,7 +143,7 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
             await axios.delete(
-                `http://localhost:8000/incident/${incidentId}`,
+                BACKEND_URL + `/incident/${incidentId}`,
                 config
             );
         } catch (error) {

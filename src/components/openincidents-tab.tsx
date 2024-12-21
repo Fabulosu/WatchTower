@@ -9,6 +9,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { BACKEND_URL } from "@/lib/data";
 
 interface Incident {
     id: number;
@@ -78,7 +79,7 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                         headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
                     };
 
-                    const response = await axios.get(`http://localhost:8000/incident/page/${pageId}`, config);
+                    const response = await axios.get(BACKEND_URL + `/incident/page/${pageId}`, config);
                     const fetchedIncidents = response.data;
                     setIncidents(fetchedIncidents.filter((incident: Incident) => !incident.resolvedAt));
                 } catch (err) {

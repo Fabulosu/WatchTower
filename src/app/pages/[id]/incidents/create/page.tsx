@@ -18,6 +18,7 @@ import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/lib/data";
 
 interface Component {
     id: number;
@@ -67,7 +68,7 @@ export default function CreateIncident({ params }: { params: { id: number } }) {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
-            const response = await axios.get(`http://localhost:8000/component/page/${params.id}`, config);
+            const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
             setComponents(response.data.map((component: any) => ({ ...component })));
         } catch (error) {
             console.error("Error fetching components:", error);
@@ -89,11 +90,11 @@ export default function CreateIncident({ params }: { params: { id: number } }) {
                 componentIds: selectedComponents.map(component => component.id),
             };
 
-            const response = await axios.post("http://localhost:8000/incident", incidentData, config);
+            const response = await axios.post(BACKEND_URL + "/incident", incidentData, config);
             if (response.data.id) {
                 router.replace(`/pages/${params.id}/incidents`);
 
-                await axios.put(`http://localhost:8000/incident/${response.data.id}`, {
+                await axios.put(BACKEND_URL + `/incident/${response.data.id}`, {
                     components: selectedComponents.map(component => ({
                         id: component.id,
                         status: component.status,
