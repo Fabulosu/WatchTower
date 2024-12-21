@@ -36,6 +36,8 @@ export default function Pages() {
                 } catch (error) {
                     console.error("Error fetching user pages:", error);
                 }
+            } else {
+                router.replace("/login");
             }
         };
 
