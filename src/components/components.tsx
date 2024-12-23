@@ -47,7 +47,7 @@ export function Components({ components }: Components) {
                 <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <h1 className="text-2xl font-bold">Components</h1>
                     <Link
-                        href="/components/create"
+                        href="components/create"
                         className={cn(buttonVariants({ variant: "default" }), "text-white font-semibold")}
                     >
                         Add component
@@ -84,7 +84,7 @@ export function Components({ components }: Components) {
                                     </div>
 
                                     <Link
-                                        href={`/components/edit/${component.id}`}
+                                        href={`components/edit/${component.id}`}
                                         className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
                                     >
                                         Edit

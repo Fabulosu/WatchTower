@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
