@@ -7,6 +7,7 @@ import { Separator } from "./ui/separator";
 import { motion } from "framer-motion";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 
 type Component = {
     id: number;
@@ -32,6 +33,14 @@ const StatusIcon = ({ status }: { status: number }) => {
 };
 
 export function Components({ components }: Components) {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (components) {
+            setLoading(false);
+        }
+    }, [components]);
+
     return (
         <div className="w-screen mx-2 sm:w-[80vw] flex justify-center items-center">
             <div className="w-full sm:w-[45vw] mt-6 flex flex-col items-center">
@@ -46,39 +55,49 @@ export function Components({ components }: Components) {
                 </div>
                 <Separator className="w-full h-[2px] my-4 bg-gray-300" />
 
-                <div className="w-full grid gap-4 mt-4">
-                    {components?.map((component) => (
-                        <motion.div
-                            key={component.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            whileHover={{ scale: 1.01 }}
-                            transition={{ duration: 0.2 }}
-                            className="w-full bg-card rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <StatusIcon status={component.status} />
-                                    <div>
-                                        <h2 className="font-semibold text-lg text-muted-foreground">
-                                            {component.name}
-                                        </h2>
-                                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                            {component.description}
-                                        </p>
+                {loading ? (
+                    <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
+                    </div>
+                ) : components && components.length > 0 ? (
+                    <div className="w-full grid gap-4 mt-4">
+                        {components.map((component) => (
+                            <motion.div
+                                key={component.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                whileHover={{ scale: 1.01 }}
+                                transition={{ duration: 0.2 }}
+                                className="w-full bg-card rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <StatusIcon status={component.status} />
+                                        <div>
+                                            <h2 className="font-semibold text-lg text-muted-foreground">
+                                                {component.name}
+                                            </h2>
+                                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                                {component.description}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <Link
-                                    href={`/components/edit/${component.id}`}
-                                    className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
-                                >
-                                    Edit
-                                </Link>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                                    <Link
+                                        href={`/components/edit/${component.id}`}
+                                        className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
+                                    >
+                                        Edit
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="w-full flex justify-center items-center mt-4">
+                        <p>No components to show</p>
+                    </div>
+                )}
             </div>
         </div>
     );

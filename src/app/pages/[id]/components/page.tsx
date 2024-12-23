@@ -27,5 +27,6 @@ export default async function ComponentsPage({ params }: { params: { id: number 
         }
     } catch (error) {
         console.error("Error fetching page components:", error);
+        return <Components components={[]} />
     }
 }
