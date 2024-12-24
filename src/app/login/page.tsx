@@ -9,11 +9,7 @@ import Navbar from "@/components/navbar";
 import { motion } from "framer-motion";
 import Footer from "@/components/footer";
 
-type Props = {
-    searchParams?: Record<"callbackUrl" | "error", string>;
-}
-
-export default function LoginPage(props: Props) {
+export default function LoginPage() {
     const { data: session } = useSession();
     const router = useRouter();
 

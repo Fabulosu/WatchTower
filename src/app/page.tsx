@@ -53,7 +53,7 @@ export default function HomePage() {
             </span>
 
             <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-              The world's best free{" "}
+              The world&apos;s best free{" "}
               <span className="relative">
                 <span className="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
                   uptime monitoring

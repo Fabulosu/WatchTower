@@ -34,7 +34,7 @@ const statusMap: { [key: string]: string } = {
     "3": "Resolved",
 };
 
-const StatusBadge = ({ status, severity }: { status: string; severity: string }) => {
+const StatusBadge = ({ status }: { status: string }) => {
     const getStatusColor = () => {
         switch (status) {
             case "0":
@@ -122,7 +122,7 @@ const IncidentCard = ({ incident, onView, onDelete }: {
 
             <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 {!incident.resolvedAt && latestStatus && (
-                    <StatusBadge status={latestStatus} severity={incident.severity} />
+                    <StatusBadge status={latestStatus} />
                 )}
                 <span>
                     {incident.resolvedAt

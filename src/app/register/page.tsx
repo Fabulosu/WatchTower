@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Navbar from "@/components/navbar";
@@ -11,11 +11,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/lib/data";
 import { motion } from "framer-motion";
 
-type Props = {
-    searchParams?: Record<"callbackUrl" | "error", string>;
-}
-
-export default function RegisterPage(props: Props) {
+export default function RegisterPage() {
     const { data: session } = useSession();
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);

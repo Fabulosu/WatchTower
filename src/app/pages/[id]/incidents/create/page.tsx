@@ -69,7 +69,7 @@ export default function CreateIncident({ params }: { params: { id: number } }) {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
             const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
-            setComponents(response.data.map((component: any) => ({ ...component })));
+            setComponents(response.data.map((component: Component) => ({ ...component })));
         } catch (error) {
             console.error("Error fetching components:", error);
         }
