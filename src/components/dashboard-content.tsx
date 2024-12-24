@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "./ui/button";
 
 export function DashboardContent({ pageData }: { pageData: { name: string; id: number; } | null; }) {
-    console.log(pageData)
     if (!pageData) {
         return (
             <motion.div

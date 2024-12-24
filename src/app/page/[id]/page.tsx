@@ -12,80 +12,12 @@ import {
 } from "@/components/ui/tooltip";
 import { CiCircleQuestion } from 'react-icons/ci';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { calculateTotalUptime, calculateUptimeForDay, cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
-
-interface IncidentStatus {
-    id: number;
-    status: number;
-    statusMessage: string;
-    createdAt: string;
-}
-
-interface Incident {
-    id: number;
-    name: string;
-    scheduleAt: string | null;
-    resolvedAt: string | null;
-    status: string;
-    severity: string;
-    createdAt: string;
-    updatedAt: string;
-    history: IncidentStatus[];
-}
-
-interface Component {
-    id: number;
-    name: string;
-    status: number;
-    description: string;
-    displayUptime: boolean;
-    createdAt: string;
-    incidents: Incident[];
-}
-
-interface PageData {
-    id: number;
-    name: string;
-    companyWebsite: string;
-    supportUrl: string;
-    createdAt: string;
-    updatedAt: string;
-    components: Component[];
-}
-
-const calculateUptimeForDay = (incidents: Incident[], date: string) => {
-    let totalDowntimeSeconds = 0;
-    const startOfDay = dayjs(date).startOf('day');
-    const endOfDay = dayjs(date).endOf('day');
-
-    incidents.forEach((incident: Incident) => {
-        const incidentStart = dayjs(incident.createdAt);
-        const incidentEnd = incident.resolvedAt ? dayjs(incident.resolvedAt) : dayjs();
-
-        // Incident affects the current day if it overlaps with the date being checked
-        if (incidentStart.isBefore(endOfDay) && incidentEnd.isAfter(startOfDay)) {
-            // Calculate the overlap between the incident and the current day
-            const downtimeStart = incidentStart.isBefore(startOfDay) ? startOfDay : incidentStart;
-            const downtimeEnd = incidentEnd.isAfter(endOfDay) ? endOfDay : incidentEnd;
-
-            const downtime = downtimeEnd.diff(downtimeStart, 'second');
-            totalDowntimeSeconds += Math.min(downtime, 86400);
-        }
-    });
-
-    const uptimePercentage = ((1 - totalDowntimeSeconds / 86400) * 100).toFixed(2);
-    return Number(uptimePercentage);
-};
-
-const calculateTotalUptime = (uptimeData: { day: string; uptime: number }[]) => {
-    const totalUptime = uptimeData.reduce((acc, stat) => acc + stat.uptime, 0) / uptimeData.length;
-    return totalUptime.toFixed(2);
-};
 
 export default function StatusPage({ params }: { params: { id: number } }) {
     const pageId = params.id;
-    const [pageData, setPageData] = useState<PageData | null>(null);
+    const [pageData, setPageData] = useState<Page | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [openIncidents, setOpenIncidents] = useState<Incident[]>([]);
     const [incidentsByDay, setIncidentsByDay] = useState<{ [key: string]: Incident[] }>({});

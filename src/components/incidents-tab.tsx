@@ -19,28 +19,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "./ui/button";
 import { BACKEND_URL } from "@/lib/data";
-
-interface Incident {
-    id: number;
-    name: string;
-    resolvedAt: string | null;
-    severity: string;
-    updatedAt: string;
-    history: IncidentStatus[];
-    components: Component[];
-}
-
-interface IncidentStatus {
-    status: string;
-    createdAt: string;
-}
-
-interface Component {
-    id: number;
-    name: string;
-}
 
 const getLatestStatus = (history: IncidentStatus[]) => {
     return history
