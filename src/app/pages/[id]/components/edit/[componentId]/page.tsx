@@ -38,8 +38,6 @@ const componentStatusOptions = [
 export default function EditComponent({ params }: { params: { id: number, componentId: number } }) {
     const router = useRouter();
     const { data: session } = useSession();
-
-    const [componentData, setComponentData] = useState<Component | null>(null)
     const [componentName, setComponentName] = useState("");
     const [componentStatus, setComponentStatus] = useState("");
     const [componentDescription, setComponentDescription] = useState("");
@@ -56,8 +54,8 @@ export default function EditComponent({ params }: { params: { id: number, compon
                     });
 
                     if (response.status === 200) {
-                        setComponentData(response.data);
                         setComponentName(response.data.name);
+                        setComponentStatus(response.data.status);
                         setComponentDescription(response.data.description);
                     }
                 } catch (error) {
@@ -71,19 +69,20 @@ export default function EditComponent({ params }: { params: { id: number, compon
 
     const handleUpdateComponent = async () => {
         try {
-            const response = await axios.post(BACKEND_URL + `/component/${params.id}`, {
+            const response = await axios.put(BACKEND_URL + `/component/${params.id}`, {
                 name: componentName,
                 description: componentDescription,
                 displayUptime: displayUptime,
-                status: 1,
+                status: parseInt(componentStatus),
             }, {
                 headers: {
                     Authorization: `Bearer ${session?.backendTokens.accessToken}`
                 }
             });
 
-            if (response.status === 201) {
-                router.push("/pages/1/components");
+            if (response.status === 200) {
+                router.replace(`/pages/${params.id}/components`);
+                router.refresh();
             }
         } catch (error) {
             console.error("Error creating component:", error);
@@ -129,7 +128,6 @@ export default function EditComponent({ params }: { params: { id: number, compon
                             <Textarea
                                 id="componentName"
                                 placeholder="Enter component name..."
-                                defaultValue={componentData?.name}
                                 value={componentName}
                                 onChange={(e) => setComponentName(e.target.value)}
                                 className=" border-gray-300"
@@ -147,7 +145,7 @@ export default function EditComponent({ params }: { params: { id: number, compon
 
                         </Label>
                         <Select
-                            value={String(componentData?.status)}
+                            value={String(componentStatus)}
                             onValueChange={(value) =>
                                 setComponentStatus(value)
                             }
