@@ -1,17 +1,31 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { motion } from "framer-motion";
-import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
+import { FaCheckCircle, FaEdit, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { useEffect, useState, useTransition } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import axios from "axios";
 import { BACKEND_URL } from "@/lib/data";
 import { useSession } from "next-auth/react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { MoreVertical, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Component = {
     id: number;
@@ -38,6 +52,7 @@ const StatusIcon = ({ status }: { status: number }) => {
 };
 
 export function Components({ components }: ComponentsProps) {
+    const router = useRouter();
     const { data: session } = useSession();
     const [loading, setLoading] = useState(true);
     const [optimisticState, setOptimisticState] = useState<Component[]>([]);
@@ -85,6 +100,22 @@ export function Components({ components }: ComponentsProps) {
 
             await axios.put(`${BACKEND_URL}/component/order`, { components: updatedOrders }, config);
         });
+    };
+
+    const handleDelete = async (id: number) => {
+        try {
+            const config = {
+                headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
+            };
+            await axios.delete(BACKEND_URL + `/component/${id}`, config);
+            setOptimisticState(prevState => prevState.filter(component => component.id !== id));
+        } catch (err) {
+            console.error('Error deleting component:', err);
+        }
+    };
+
+    const handleEdit = (id: number) => {
+        router.push(`components/edit/${id}`);
     };
 
     return (
@@ -146,12 +177,52 @@ export function Components({ components }: ComponentsProps) {
                                                                 </div>
                                                             </div>
 
-                                                            <Link
-                                                                href={`components/edit/${component.id}`}
-                                                                className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
-                                                            >
-                                                                Edit
-                                                            </Link>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger className="p-2 hover:bg-card/80 rounded-lg transition-colors">
+                                                                    <MoreVertical className="h-5 w-5" />
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem asChild>
+                                                                        <DropdownMenuItem onClick={() => handleEdit(component.id)}>
+                                                                            <FaEdit className="mr-2 h-4 w-4" />
+                                                                            Edit
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuItem>
+                                                                    <AlertDialog>
+                                                                        <AlertDialogTrigger asChild>
+                                                                            <DropdownMenuItem className="text-red-500 focus:text-red-500" onSelect={(e) => e.preventDefault()}>
+                                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                                Delete
+                                                                            </DropdownMenuItem>
+                                                                        </AlertDialogTrigger>
+                                                                        <AlertDialogContent>
+                                                                            <AlertDialogHeader>
+                                                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                                                <AlertDialogDescription>
+                                                                                    This action cannot be undone. This will permanently delete the component and all its data.
+                                                                                </AlertDialogDescription>
+                                                                            </AlertDialogHeader>
+                                                                            <AlertDialogFooter>
+                                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                <AlertDialogAction
+                                                                                    onClick={async () => {
+                                                                                        await handleDelete(component.id);
+                                                                                        if (document.activeElement instanceof HTMLElement) {
+                                                                                            document.activeElement.blur();
+                                                                                        }
+                                                                                        setTimeout(() => {
+                                                                                            document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                                                                        }, 0);
+                                                                                    }}
+                                                                                    className="bg-red-500 hover:bg-red-600"
+                                                                                >
+                                                                                    Delete
+                                                                                </AlertDialogAction>
+                                                                            </AlertDialogFooter>
+                                                                        </AlertDialogContent>
+                                                                    </AlertDialog>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
                                                         </div>
                                                     </motion.div>
                                                 </li>

@@ -40,7 +40,8 @@ export default function CreateComponent({ params }: { params: { id: number } }) 
             });
 
             if (response.status === 201) {
-                router.push("/pages/1/components");
+                router.push(`/pages/${params.id}/components`);
+                router.refresh();
             }
         } catch (error) {
             console.error("Error creating component:", error);

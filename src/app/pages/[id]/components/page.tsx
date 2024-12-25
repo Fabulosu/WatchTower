@@ -4,13 +4,6 @@ import { BACKEND_URL } from "@/lib/data";
 import axios from "axios";
 import { getServerSession } from "next-auth";
 
-type Component = {
-    id: number;
-    name: string;
-    status: number;
-    description: string;
-};
-
 export default async function ComponentsPage({ params }: { params: { id: number } }) {
     try {
         const session = await getServerSession(authConfig);
