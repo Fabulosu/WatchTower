@@ -163,7 +163,7 @@ export function IncidentsTab({ pageId }: { pageId: number }) {
     }, [pageId, session?.backendTokens.accessToken]);
 
     const handleView = (id: number) => {
-        router.push(`incidents/${id}`);
+        router.push(`incidents/edit/${id}`);
     };
 
     const handleDelete = async (id: number) => {

@@ -36,10 +36,11 @@ type AppSidebarProps = {
     params: { id: string };
 };
 
-const NavLink = ({ href, className, children }: {
+const NavLink = ({ href, className, children, target }: {
     href: string;
     className?: string;
     children: React.ReactNode;
+    target?: string;
 }) => {
     const pathname = usePathname();
     const isActive = pathname.includes(href);
@@ -47,6 +48,7 @@ const NavLink = ({ href, className, children }: {
     return (
         <Link
             href={href}
+            target={target}
             className={cn(
                 "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
                 "hover:bg-card/80",
@@ -154,7 +156,7 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
                     <SidebarGroupLabel className="font-bold">Shortcuts</SidebarGroupLabel>
                     {selectedPage && (
                         <>
-                            <NavLink href={`/page/${selectedPage.value}`}>
+                            <NavLink href={`/page/${selectedPage.value}`} target="_blank">
                                 View status page
                                 <FaExternalLinkAlt className="h-4 w-4" />
                             </NavLink>

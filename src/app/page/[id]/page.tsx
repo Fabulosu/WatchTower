@@ -27,30 +27,21 @@ export default function StatusPage({ params }: { params: { id: number } }) {
             try {
                 const response = await axios.get(`${BACKEND_URL}/page/${pageId}`);
                 const components = response.data.components;
-
-                // To store unique incidents, we use a Map with the incident ID as the key.
                 const incidentsMap = new Map<number, Incident>();
 
-                // Iterate through components and their incidents
                 components.forEach((component: Component) => {
                     component.incidents.forEach((incident: Incident) => {
-                        // Add the incident to the map using its ID, ensuring uniqueness
                         incidentsMap.set(incident.id, incident);
                     });
                 });
 
-                // Convert the Map to an array to get the unique incidents
                 const uniqueIncidents = Array.from(incidentsMap.values());
-
-                // Prepare for grouping incidents by the past 14 days
                 const today = dayjs();
                 const past14Days = Array.from({ length: 14 }, (_, i) =>
                     today.subtract(i, 'day').format('YYYY-MM-DD')
                 );
-
                 const incidentsGroupedByDay: { [key: string]: Incident[] } = {};
 
-                // Group incidents by the day they occurred
                 past14Days.forEach((day) => {
                     incidentsGroupedByDay[day] = uniqueIncidents.filter(
                         (incident) =>
@@ -60,7 +51,6 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
                 setIncidentsByDay(incidentsGroupedByDay);
 
-                // Filter unresolved incidents for display in the "Ongoing Incidents" section
                 const unresolvedIncidents = uniqueIncidents.filter(
                     (incident) => !incident.resolvedAt
                 );
@@ -84,9 +74,12 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     }, [pageData]);
 
     const today = dayjs();
-    const [daysToShow, setDaysToShow] = useState(
-        window.innerWidth <= 767 ? 30 : window.innerWidth <= 1024 ? 60 : 90
-    );
+    const [daysToShow, setDaysToShow] = useState(90);
+
+    useEffect(() => {
+        const initialDaysToShow = window.innerWidth <= 767 ? 30 : window.innerWidth <= 1024 ? 60 : 90;
+        setDaysToShow(initialDaysToShow);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -110,7 +103,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
         const uptimeData = lastDays.map((date) => ({
             day: date,
-            uptime: calculateUptimeForDay(component.incidents, date),
+            uptime: calculateUptimeForDay(component.statusHistory, date),
         }));
 
         const totalUptime = calculateTotalUptime(uptimeData);
@@ -172,7 +165,11 @@ export default function StatusPage({ params }: { params: { id: number } }) {
     };
 
     if (loading) {
-        return <div className="flex justify-center font-semibold items-center h-screen text-primary">Loading...</div>;
+        return (
+            <div className="flex min-h-screen items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
+            </div>
+        )
     }
 
     if (!pageData) {

@@ -130,7 +130,7 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                             </div>
                         </div>
                         <Link
-                            href={`incidents/${incident.id}`}
+                            href={`incidents/edit/${incident.id}`}
                             className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
                         >
                             Update Incident

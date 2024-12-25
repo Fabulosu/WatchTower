@@ -26,6 +26,15 @@ interface Component {
     createdAt: string;
     incidents: Incident[];
     order: number;
+    statusHistory: ComponentStatus[];
+}
+
+interface ComponentStatus {
+    id: number;
+    componentId: number;
+    status: number;
+    assignedAt: string;
+    removedAt: string | null;
 }
 
 interface Incident {
