@@ -69,7 +69,7 @@ export default function EditComponent({ params }: { params: { id: number, compon
 
     const handleUpdateComponent = async () => {
         try {
-            const response = await axios.put(BACKEND_URL + `/component/${params.id}`, {
+            const response = await axios.put(BACKEND_URL + `/component/update/${params.id}`, {
                 name: componentName,
                 description: componentDescription,
                 displayUptime: displayUptime,

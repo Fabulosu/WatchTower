@@ -25,6 +25,7 @@ interface Component {
     displayUptime: boolean;
     createdAt: string;
     incidents: Incident[];
+    order: number;
 }
 
 interface Incident {

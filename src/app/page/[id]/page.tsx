@@ -223,35 +223,35 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                 )}
 
                 <div className='flex flex-col gap-2 w-full'>
-                    {pageData.components.map((component) => (
-                        <div key={component.id} className="bg-card rounded-lg p-4 shadow-2xl">
-                            <div className='flex justify-between items-center w-full'>
-                                <div className='flex gap-2 items-center'>
-                                    <h2 className="text-xl font-semibold text-foreground">{component.name}</h2>
-                                    {component.description && component.description !== null ? (
-                                        <TooltipProvider delayDuration={100}>
-                                            <Tooltip>
-                                                <TooltipTrigger className='hover:cursor-default'>
-                                                    <CiCircleQuestion size={15} className='text-gray-500' />
-                                                </TooltipTrigger>
-                                                <TooltipContent side='top' className='bg-popover drop-shadow-lg border-0 duration-0'>
-                                                    <p className='text-card-foreground'>{component.description}</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    ) : null}
-
+                    {pageData.components
+                        .sort((a, b) => a.order - b.order)
+                        .map((component) => (
+                            <div key={component.id} className="bg-card rounded-lg p-4 shadow-2xl">
+                                <div className='flex justify-between items-center w-full'>
+                                    <div className='flex gap-2 items-center'>
+                                        <h2 className="text-xl font-semibold text-foreground">{component.name}</h2>
+                                        {component.description && component.description !== null ? (
+                                            <TooltipProvider delayDuration={100}>
+                                                <Tooltip>
+                                                    <TooltipTrigger className='hover:cursor-default'>
+                                                        <CiCircleQuestion size={15} className='text-gray-500' />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side='top' className='bg-popover drop-shadow-lg border-0 duration-0'>
+                                                        <p className='text-card-foreground'>{component.description}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        ) : null}
+                                    </div>
+                                    <p className={`${component.status == 1 ? "text-green-500" : component.status == 2 ? "text-yellow-500" : component.status == 3 ? "text-orange-500" : component.status == 4 ? "text-red-500" : component.status == 5 ? "text-blue-500" : ""} font-medium text-sm`}>
+                                        {component.status == 1 ? "Operational" : component.status == 2 ? "Degraded Performance" : component.status == 3 ? "Partial Outage" : component.status == 4 ? "Major Outage" : component.status == 5 ? "Under Maintenance" : ""}
+                                    </p>
                                 </div>
-
-                                <p className={`${component.status == 1 ? "text-green-500" : component.status == 2 ? "text-yellow-500" : component.status == 3 ? "text-orange-500" : component.status == 4 ? "text-red-500" : component.status == 5 ? "text-blue-500" : ""} font-medium text-sm`}>
-                                    {component.status == 1 ? "Operational" : component.status == 2 ? "Degraded Performance" : component.status == 3 ? "Partial Outage" : component.status == 4 ? "Major Outage" : component.status == 5 ? "Under Maintenance" : ""}
-                                </p>
+                                {component.displayUptime ? (
+                                    renderUptimeBars(component)
+                                ) : null}
                             </div>
-                            {component.displayUptime ? (
-                                renderUptimeBars(component)
-                            ) : null}
-                        </div>
-                    ))}
+                        ))}
                 </div>
                 <div className="bg-card p-4 w-full rounded-lg shadow-2xl">
                     <h2 className="text-2xl font-semibold text-foreground">Incident History (Last 14 Days)</h2>
