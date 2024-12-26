@@ -86,7 +86,7 @@ const Navbar = () => {
                                 <Link
                                     className={cn(
                                         buttonVariants({ variant: "outline" }),
-                                        "rounded-full hover:bg-primary/10 text-black"
+                                        "rounded-full hover:bg-primary/10 text-black dark:text-white"
                                     )}
                                     href="/login"
                                 >

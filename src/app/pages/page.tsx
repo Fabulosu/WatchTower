@@ -31,7 +31,7 @@ export default function Pages() {
                         const firstPageId = pages[0].id;
                         router.replace(`/pages/${firstPageId}`);
                     } else {
-                        console.warn("No pages found for the user.");
+                        router.replace("/pages/create");
                     }
                 } catch (error) {
                     console.error("Error fetching user pages:", error);

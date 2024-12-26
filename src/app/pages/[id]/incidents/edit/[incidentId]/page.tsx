@@ -176,11 +176,12 @@ export default function UpdateIncident({ params }: { params: { incidentId: numbe
             <div className="w-[45vw] flex justify-between pb-10">
                 <h1 className="text-2xl font-bold">{incident.name}</h1>
                 <div className="flex items-center gap-4">
+                    <Label htmlFor="iSeverity">Severity</Label>
                     <Select
                         value={selectedSeverity}
                         onValueChange={setSelectedSeverity}
                     >
-                        <SelectTrigger className="w-[200px]">
+                        <SelectTrigger className="w-[200px]" id="iSeverity">
                             <SelectValue placeholder="Select severity" />
                         </SelectTrigger>
                         <SelectContent>

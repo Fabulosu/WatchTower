@@ -24,7 +24,9 @@ import { BACKEND_URL } from "@/lib/data";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaPlus } from "react-icons/fa";
+import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
+import { Separator } from "./ui/separator";
 
 type Page = {
     value: string;
@@ -126,6 +128,14 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
                                         {page.label}
                                     </DropdownMenuItem>
                                 ))}
+                                <Separator className="w-full h-[2px] my-1 bg-gray-300" />
+                                <DropdownMenuItem
+                                    onClick={() => router.push("/pages/create")}
+                                    className="flex w-full h-12 items-center"
+                                >
+                                    <FaPlus className="text-muted-foreground" />
+                                    <p>Add another page</p>
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </SidebarMenuItem>

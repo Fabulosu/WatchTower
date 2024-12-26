@@ -10,8 +10,8 @@ interface Page {
     components: Component[];
     incidents: Incident[];
     name: string;
-    companyWebsite: string;
-    supportUrl: string;
+    companyWebsite: string | null;
+    supportUrl: string | null;
     createdAt: string;
     updatedAt: string | null;
 }
