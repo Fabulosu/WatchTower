@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MoreVertical, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { BsFillWrenchAdjustableCircleFill } from "react-icons/bs";
 
 type Component = {
     id: number;
@@ -44,6 +45,7 @@ const componentStatusOptions = [
     { value: "2", icon: <FaMinusCircle className="text-yellow-500" size={16} />, label: "Degraded Performance" },
     { value: "3", icon: <FaCircleExclamation className="text-orange-500" size={16} />, label: "Partial Outage" },
     { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
+    { value: "5", icon: <BsFillWrenchAdjustableCircleFill className="text-blue-500" size={16} />, label: "Under Maintenance" },
 ];
 
 const StatusIcon = ({ status }: { status: number }) => {

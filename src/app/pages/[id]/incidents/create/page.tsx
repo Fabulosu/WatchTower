@@ -47,7 +47,7 @@ const componentStatusOptions = [
     { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
 ];
 
-export default function CreateIncident({ params }: { params: { id: number } }) {
+export default function CreateIncident({ params }: { params: { id: string } }) {
     const router = useRouter();
     const { data: session } = useSession();
     const [incidentName, setIncidentName] = useState("");
@@ -86,7 +86,7 @@ export default function CreateIncident({ params }: { params: { id: number } }) {
                 severity: selectedSeverity,
                 statusCode: parseInt(selectedStatus),
                 statusMessage: updateMessage,
-                pageId: 1,
+                pageId: parseInt(params.id),
                 componentIds: selectedComponents.map(component => component.id),
             };
 

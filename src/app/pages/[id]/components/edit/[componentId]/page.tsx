@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/data";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
+import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
+
 import {
     Select,
     SelectContent,
@@ -32,6 +34,7 @@ const componentStatusOptions = [
     { value: "2", icon: <FaMinusCircle className="text-yellow-500" size={16} />, label: "Degraded Performance" },
     { value: "3", icon: <FaCircleExclamation className="text-orange-500" size={16} />, label: "Partial Outage" },
     { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
+    { value: "5", icon: <BsWrenchAdjustableCircleFill className="text-blue-500" size={16} />, label: "Under Maintenance" },
 ];
 
 

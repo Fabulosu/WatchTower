@@ -18,13 +18,20 @@ const statusMap: { [key: string]: string } = {
     "3": "Resolved",
 };
 
+const maintenanceStatusMap: { [key: string]: string } = {
+    "0": "Scheduled",
+    "1": "In progress",
+    "2": "Verifying",
+    "3": "Completed",
+};
+
 const getLatestStatus = (history: IncidentStatus[]) => {
     return history
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
         ?.status.toString();
 };
 
-const StatusBadge = ({ status }: { status: string; }) => {
+const StatusBadge = ({ status, type }: { status: string; type: number; }) => {
     const getStatusColor = () => {
         switch (status) {
             case "0":
@@ -38,9 +45,13 @@ const StatusBadge = ({ status }: { status: string; }) => {
         }
     };
 
+    const getStatusText = () => {
+        return type === 0 ? maintenanceStatusMap[status] : statusMap[status];
+    };
+
     return (
-        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor()}`}>
-            {statusMap[status] || ""}
+        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${type === 0 ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : getStatusColor()}`}>
+            {getStatusText() || ""}
         </div>
     );
 };
@@ -115,7 +126,7 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                     key={incident.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={cn(`${incident.severity == "Minor" ? "border-t-4 border-t-yellow-600" : incident.severity == "Major" ? "border-t-4 border-t-orange-600" : incident.severity == "Critical" ? "border-t-4 border-t-red-600" : ""}`, "bg-card/50 backdrop-blur-sm rounded-lg p-6")}
+                    className={cn(`${incident.severity == "Minor" ? "border-t-4 border-t-yellow-600" : incident.severity == "Major" ? "border-t-4 border-t-orange-600" : incident.severity == "Critical" ? "border-t-4 border-t-red-600" : incident.severity == "Maintenance" ? "border-t-4 border-t-blue-600" : ""}`, "bg-card/50 backdrop-blur-sm rounded-lg p-6")}
                 >
                     <div className="flex justify-between items-start">
                         <div className="space-y-2">
@@ -123,6 +134,7 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                             <div className="flex items-center gap-2">
                                 <StatusBadge
                                     status={getLatestStatus(incident.history)}
+                                    type={incident.scheduledAt !== null ? 0 : 1}
                                 />
                                 <span className="text-sm text-muted-foreground">
                                     Last updated {format(new Date(incident.updatedAt), 'MMM d, yyyy HH:mm')}
@@ -130,10 +142,10 @@ export function OpenIncidentsTab({ pageId }: { pageId: number }) {
                             </div>
                         </div>
                         <Link
-                            href={`incidents/edit/${incident.id}`}
+                            href={incident.scheduledAt !== null ? `incidents/edit-maintenance/${incident.id}` : `incidents/edit/${incident.id}`}
                             className={cn(buttonVariants({ variant: "outline" }), "rounded-xl hover:bg-card-foreground/80")}
                         >
-                            Update Incident
+                            {incident.scheduledAt !== null ? "Update Maintenance" : "Update Incident"}
                         </Link>
                     </div>
 

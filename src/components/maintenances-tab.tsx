@@ -28,39 +28,26 @@ const getLatestStatus = (history: IncidentStatus[]) => {
 };
 
 const statusMap: { [key: string]: string } = {
-    "0": "Investigating",
-    "1": "Identified",
-    "2": "Monitoring",
-    "3": "Resolved",
+    "0": "Scheduled",
+    "1": "In progress",
+    "2": "Verifying",
+    "3": "Completed",
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
-    const getStatusColor = () => {
-        switch (status) {
-            case "0":
-                return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
-            case "1":
-                return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-            case "2":
-                return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-            case "3":
-                return 'bg-green-500/10 text-green-500 border-green-500/20';
-        }
-    };
-
     return (
-        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor()}`}>
+        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-blue-500/10 text-blue-500 border-blue-500/20`}>
             {statusMap[status] || ""}
         </div>
     );
 };
 
-const IncidentCard = ({ incident, onView, onDelete }: {
-    incident: Incident;
+const MaintenanceCard = ({ maintenance, onView, onDelete }: {
+    maintenance: Incident;
     onView: (id: number) => void;
     onDelete: (id: number) => void;
 }) => {
-    const latestStatus = getLatestStatus(incident.history);
+    const latestStatus = getLatestStatus(maintenance.history);
 
     return (
         <motion.div
@@ -70,7 +57,7 @@ const IncidentCard = ({ incident, onView, onDelete }: {
         >
             <div className="flex justify-between items-start">
                 <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">{incident.name}</h3>
+                    <h3 className="text-lg font-semibold">{maintenance.name}</h3>
                 </div>
 
                 <DropdownMenu>
@@ -78,7 +65,7 @@ const IncidentCard = ({ incident, onView, onDelete }: {
                         <MoreVertical className="h-5 w-5" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onView(incident.id)}>
+                        <DropdownMenuItem onClick={() => onView(maintenance.id)}>
                             <Eye className="mr-2 h-4 w-4" />
                             View
                         </DropdownMenuItem>
@@ -101,7 +88,7 @@ const IncidentCard = ({ incident, onView, onDelete }: {
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={async () => {
-                                            await onDelete(incident.id);
+                                            await onDelete(maintenance.id);
                                             if (document.activeElement instanceof HTMLElement) {
                                                 document.activeElement.blur();
                                             }
@@ -121,49 +108,49 @@ const IncidentCard = ({ incident, onView, onDelete }: {
             </div>
 
             <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                {!incident.resolvedAt && latestStatus && (
+                {!maintenance.resolvedAt && latestStatus && (
                     <StatusBadge status={latestStatus} />
                 )}
                 <span>
-                    {incident.resolvedAt
-                        ? `Resolved on ${format(new Date(incident.resolvedAt), 'MMM d, yyyy HH:mm')}`
-                        : `Last updated ${format(new Date(incident.updatedAt), 'MMM d, yyyy HH:mm')}`}
+                    {maintenance.resolvedAt
+                        ? `Completed on ${format(new Date(maintenance.resolvedAt), 'MMM d, yyyy HH:mm')}`
+                        : `Last updated ${format(new Date(maintenance.updatedAt), 'MMM d, yyyy HH:mm')}`}
                 </span>
             </div>
         </motion.div>
     );
 };
 
-export function IncidentsTab({ pageId }: { pageId: number }) {
+export function MaintenancesTab({ pageId }: { pageId: number }) {
     const router = useRouter();
     const { data: session } = useSession();
-    const [incidents, setIncidents] = useState<Incident[]>([]);
+    const [maintenances, setMaintenances] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchIncidents = async () => {
+        const fetchMaintenances = async () => {
             try {
                 const config = {
                     headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
                 };
 
                 const response = await axios.get(BACKEND_URL + `/incident/page/${pageId}`, config);
-                const fetchedIncidents = response.data;
-                setIncidents(fetchedIncidents.filter((incident: Incident) => incident.scheduledAt === null));
+                const fetchedMaintenances = response.data;
+                setMaintenances(fetchedMaintenances.filter((maintenance: Incident) => maintenance.scheduledAt !== null));
             } catch (err) {
-                setError('Failed to load incidents');
-                console.error('Error fetching incidents:', err);
+                setError('Failed to load maintenances');
+                console.error('Error fetching maintenances:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchIncidents();
+        fetchMaintenances();
     }, [pageId, session?.backendTokens.accessToken]);
 
     const handleView = (id: number) => {
-        router.push(`incidents/edit/${id}`);
+        router.push(`incidents/edit-maintenance/${id}`);
     };
 
     const handleDelete = async (id: number) => {
@@ -172,7 +159,7 @@ export function IncidentsTab({ pageId }: { pageId: number }) {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
             await axios.delete(BACKEND_URL + `/incident/${id}`, config);
-            setIncidents(incidents.filter(incident => incident.id !== id));
+            setMaintenances(maintenances.filter(maintenances => maintenances.id !== id));
         } catch (err) {
             console.error('Error deleting incident:', err);
         }
@@ -194,20 +181,20 @@ export function IncidentsTab({ pageId }: { pageId: number }) {
         );
     }
 
-    if (incidents.length === 0) {
+    if (maintenances.length === 0) {
         return (
             <div className="text-center py-12">
-                <p className="text-muted-foreground">No incidents found</p>
+                <p className="text-muted-foreground">No maintenances found</p>
             </div>
         );
     }
 
     return (
         <div className="space-y-4">
-            {incidents.map((incident) => (
-                <IncidentCard
-                    key={incident.id}
-                    incident={incident}
+            {maintenances.map((maintenance) => (
+                <MaintenanceCard
+                    key={maintenance.id}
+                    maintenance={maintenance}
                     onView={handleView}
                     onDelete={handleDelete}
                 />

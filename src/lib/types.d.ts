@@ -43,12 +43,15 @@ interface Incident {
     components: Component[];
     name: string;
     status: number;
-    scheduleAt: string | null;
     resolvedAt: string | null;
     severity: string;
     history: IncidentStatus[];
     createdAt: string;
     updatedAt: string;
+    scheduledAt: string | null;
+    auto_start: boolean;
+    auto_end: boolean;
+    completeAt: string | null;
 }
 
 interface IncidentStatus {

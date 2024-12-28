@@ -15,11 +15,19 @@ import Link from 'next/link';
 import { calculateTotalUptime, calculateUptimeForDay, cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 
+const getLatestStatus = (history: IncidentStatus[]) => {
+    return parseInt(history
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+        ?.status.toString());
+};
+
 export default function StatusPage({ params }: { params: { id: number } }) {
     const pageId = params.id;
     const [pageData, setPageData] = useState<Page | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [openIncidents, setOpenIncidents] = useState<Incident[]>([]);
+    const [maintenancesInProgress, setMaintenancesInProgress] = useState<Incident[]>([]);
+    const [maintenances, setMaintenances] = useState<Incident[]>([]);
     const [incidentsByDay, setIncidentsByDay] = useState<{ [key: string]: Incident[] }>({});
 
     useEffect(() => {
@@ -51,10 +59,20 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
                 setIncidentsByDay(incidentsGroupedByDay);
 
-                const unresolvedIncidents = uniqueIncidents.filter(
-                    (incident) => !incident.resolvedAt
+                const maintenances = uniqueIncidents.filter(
+                    (incident) => incident.scheduledAt != null && getLatestStatus(incident.history) === 0
                 );
 
+                const maintenancesInProgress = uniqueIncidents.filter(
+                    (incident) => incident.scheduledAt != null && getLatestStatus(incident.history) >= 1 && getLatestStatus(incident.history) < 3
+                );
+
+                const unresolvedIncidents = uniqueIncidents.filter(
+                    (incident) => !incident.resolvedAt && !incident.scheduledAt
+                );
+
+                setMaintenances(maintenances);
+                setMaintenancesInProgress(maintenancesInProgress);
                 setOpenIncidents(unresolvedIncidents);
                 setPageData(response.data);
             } catch (error) {
@@ -181,7 +199,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
             <main className="px-0 sm:container flex flex-col gap-2 lg:w-[58vw] items-center mx-auto py-8">
                 <h1 className="text-3xl font-bold mb-6 text-foreground">{pageData.name}</h1>
 
-                {openIncidents.length > 0 ? (
+                {openIncidents.length > 0 || maintenancesInProgress.length > 0 ? (
                     <div className="bg-card p-4 w-full rounded-lg shadow-2xl">
                         <h2 className="text-3xl font-semibold text-foreground">Ongoing Incidents</h2>
                         {openIncidents.map((incident) => (
@@ -198,6 +216,28 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                             <p key={status.id} className="text-muted-foreground flex flex-col">
                                                 <span>
                                                     <span className='font-semibold text-muted-foreground'>{status.status === 0 ? "Investigating" : status.status === 1 ? "Identified" : status.status === 2 ? "Monitoring" : status.status === 3 ? "Resolved" : ""}</span> - {status.statusMessage}<br />
+                                                </span>
+                                                <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleTimeString()}</span>
+                                            </p>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        {maintenancesInProgress.map((maintenance) => (
+                            <div key={maintenance.id} className="mt-4 bg-secondary p-4 rounded-lg">
+                                <p className={`font-semibold text-xl text-blue-600`}>
+                                    {maintenance.name}
+                                </p>
+                                <p className="text-muted-foreground"><span className='font-semibold'>Severity: </span>{maintenance.severity}</p>
+                                <p className="text-muted-foreground"><span className='font-semibold'>Scheduled at: </span>{new Date(maintenance.scheduledAt ? maintenance.scheduledAt : "").toLocaleString()}</p>
+                                {maintenance.history.length > 0 && (
+                                    <div className="mt-2">
+                                        <h4 className="font-semibold text-lg">Maintenance History</h4>
+                                        {maintenance.history.sort((a, b) => b.id - a.id).map((status) => (
+                                            <p key={status.id} className="text-muted-foreground flex flex-col">
+                                                <span>
+                                                    <span className='font-semibold text-muted-foreground'>{status.status === 0 ? "Scheduled" : status.status === 1 ? "In Progress" : status.status === 2 ? "Completed" : ""}</span> - {status.statusMessage}<br />
                                                 </span>
                                                 <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleTimeString()}</span>
                                             </p>
@@ -250,6 +290,33 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                             </div>
                         ))}
                 </div>
+                {maintenances.length > 0 && (
+                    <div className='bg-card p-4 w-full rounded-lg shadow-2xl'>
+                        <h2 className="text-2xl font-semibold text-foreground">Scheduled Maintenances</h2>
+                        {maintenances.map((maintenance) => (
+                            <div key={maintenance.id} className="mt-4 bg-secondary p-4 rounded-lg">
+                                <p className={`font-semibold text-xl text-blue-600`}>
+                                    {maintenance.name}
+                                </p>
+                                <p className="text-muted-foreground"><span className='font-semibold'>Scheduled at: </span>{new Date(maintenance.scheduledAt ? maintenance.scheduledAt : "").toLocaleString()}</p>
+                                {maintenance.history.length > 0 && (
+                                    <div className="mt-2">
+                                        <h4 className="font-semibold text-lg">Maintenance History</h4>
+                                        {maintenance.history.sort((a, b) => b.id - a.id).map((status) => (
+                                            <p key={status.id} className="text-muted-foreground flex flex-col">
+                                                <span>
+                                                    <span className='font-semibold text-muted-foreground'>Scheduled</span> - {status.statusMessage}<br />
+                                                </span>
+                                                <span className='text-sm font-semibold'>{new Date(status.createdAt).toLocaleTimeString()}</span>
+                                            </p>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 <div className="bg-card p-4 w-full rounded-lg shadow-2xl">
                     <h2 className="text-2xl font-semibold text-foreground">Incident History (Last 14 Days)</h2>
                     {Object.entries(incidentsByDay).map(([day, incidents]) => (
@@ -260,45 +327,62 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                             <div className="w-full h-[1px] my-2 bg-border" />
                             {incidents.length > 0 ? (
                                 <div className="flex flex-col gap-2 py-2 rounded-lg mt-2">
-                                    {incidents.map((incident) => (
-                                        <div key={incident.id} className="bg-secondary p-4 rounded-lg">
-                                            <p className={`font-semibold text-xl ${incident.severity === "Minor" ? "text-yellow-500" : incident.severity === "Major" ? "text-orange-500" : incident.severity === "Critical" ? "text-red-500" : ""}`}>
-                                                {incident.name}
-                                            </p>
-                                            <p className="text-muted-foreground">
-                                                <span className="font-semibold">Created at:</span>{" "}
-                                                {new Date(incident.createdAt).toLocaleString()}
-                                            </p>
-                                            {incident.resolvedAt && (
-                                                <p className="text-muted-foreground">
-                                                    <span className="font-semibold">Resolved at:</span>{" "}
-                                                    {new Date(incident.resolvedAt).toLocaleString()}
+                                    {incidents
+                                        .filter((incident) => (incident.scheduledAt ? getLatestStatus(incident.history) >= 1 : true))
+                                        .map((incident) => (
+                                            <div key={incident.id} className="bg-secondary p-4 rounded-lg">
+                                                <p className={`font-semibold text-xl ${incident.severity === "Minor" ? "text-yellow-500" : incident.severity === "Major" ? "text-orange-500" : incident.severity === "Critical" ? "text-red-500" : incident.severity === "Maintenance" ? "text-blue-500" : ""}`}>
+                                                    {incident.name}
                                                 </p>
-                                            )}
-                                            {incident.history.length > 0 && (
-                                                <div className="mt-2">
-                                                    <h4 className="font-semibold text-card-foreground text-lg">
-                                                        Incident History
-                                                    </h4>
-                                                    {incident.history
-                                                        .sort((a, b) => b.id - a.id)
-                                                        .map((status) => (
-                                                            <p key={status.id} className="text-muted-foreground flex flex-col">
-                                                                <span>
-                                                                    <span className={`font-semibold text-card-foreground`}>
-                                                                        {status.status === 0 ? "Investigating" : status.status === 1 ? "Identified" : status.status === 2 ? "Monitoring" : status.status === 3 ? "Resolved" : ""}
+                                                <p className="text-muted-foreground">
+                                                    <span className="font-semibold">Created at:</span>{" "}
+                                                    {new Date(incident.createdAt).toLocaleString()}
+                                                </p>
+                                                {incident.resolvedAt && (
+                                                    <p className="text-muted-foreground">
+                                                        <span className="font-semibold">Resolved at:</span>{" "}
+                                                        {new Date(incident.resolvedAt).toLocaleString()}
+                                                    </p>
+                                                )}
+                                                {incident.history.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <h4 className="font-semibold text-card-foreground text-lg">
+                                                            Incident History
+                                                        </h4>
+                                                        {incident.scheduledAt != null ? (
+                                                            incident.history.sort((a, b) => b.id - a.id).map((status: IncidentStatus) => (
+                                                                <p key={status.id} className="text-muted-foreground flex flex-col">
+                                                                    <span>
+                                                                        <span className={`font-semibold text-card-foreground`}>
+                                                                            {status.status === 0 ? "Scheduled" : status.status === 1 ? "In progress" : status.status === 2 ? "Verifying" : status.status === 3 ? "Completed" : ""}
+                                                                        </span>
+                                                                        {" "} - {status.statusMessage}
                                                                     </span>
-                                                                    {" "} - {status.statusMessage}
-                                                                </span>
-                                                                <span className="text-sm font-semibold">
-                                                                    {new Date(status.createdAt).toLocaleString()}
-                                                                </span>
-                                                            </p>
-                                                        ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                                    <span className="text-sm font-semibold">
+                                                                        {new Date(status.createdAt).toLocaleString()}
+                                                                    </span>
+                                                                </p>
+                                                            ))
+                                                        ) : (
+                                                            incident.history.sort((a, b) => b.id - a.id).map((status: IncidentStatus) => (
+                                                                <p key={status.id} className="text-muted-foreground flex flex-col">
+                                                                    <span>
+                                                                        <span className={`font-semibold text-card-foreground`}>
+                                                                            {status.status === 0 ? "Investigating" : status.status === 1 ? "Identified" : status.status === 2 ? "Monitoring" : status.status === 3 ? "Resolved" : ""}
+                                                                        </span>
+                                                                        {" "} - {status.statusMessage}
+                                                                    </span>
+                                                                    <span className="text-sm font-semibold">
+                                                                        {new Date(status.createdAt).toLocaleString()}
+                                                                    </span>
+                                                                </p>
+                                                            ))
+                                                        )}
+
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
                                 </div>
                             ) : (
                                 <p className="text-muted-foreground py-2">No incidents reported today.</p>

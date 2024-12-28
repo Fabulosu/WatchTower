@@ -25,7 +25,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { FaExternalLinkAlt, FaPlus } from "react-icons/fa";
-import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { Separator } from "./ui/separator";
 
 type Page = {

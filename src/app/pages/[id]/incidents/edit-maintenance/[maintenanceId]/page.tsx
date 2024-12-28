@@ -30,6 +30,7 @@ import { Label } from "@/components/ui/label";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { BACKEND_URL } from "@/lib/data";
+import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
 interface Incident {
@@ -54,18 +55,11 @@ interface Component {
     status: string;
 }
 
-const severityOptions = [
-    { value: "None", label: "None" },
-    { value: "Minor", label: "Minor" },
-    { value: "Major", label: "Major" },
-    { value: "Critical", label: "Critical" },
-];
-
 const statusOptions = [
-    { value: "0", label: "Investigating" },
-    { value: "1", label: "Identified" },
-    { value: "2", label: "Monitoring" },
-    { value: "3", label: "Resolved" },
+    { value: "0", label: "Scheduled" },
+    { value: "1", label: "In progress" },
+    { value: "2", label: "Verifying" },
+    { value: "3", label: "Completed" },
 ];
 
 const componentStatusOptions = [
@@ -73,11 +67,12 @@ const componentStatusOptions = [
     { value: "2", icon: <FaMinusCircle className="text-yellow-500" size={16} />, label: "Degraded Performance" },
     { value: "3", icon: <FaCircleExclamation className="text-orange-500" size={16} />, label: "Partial Outage" },
     { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
+    { value: "5", icon: <BsWrenchAdjustableCircleFill className="text-blue-500" size={16} />, label: "Under Maintenance" },
 ];
 
-export default function UpdateIncident({ params }: { params: { id: number, incidentId: number } }) {
+export default function UpdateMaintenance({ params }: { params: { id: number, maintenanceId: number } }) {
     const router = useRouter();
-    const incidentId = params.incidentId;
+    const maintenanceId = params.maintenanceId;
     const { data: session } = useSession();
     const [incident, setIncident] = useState<Incident | null>(null);
     const [loading, setLoading] = useState(true);
@@ -90,7 +85,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
         if (session?.backendTokens.accessToken) {
             fetchIncident();
         }
-    }, [incidentId, session?.backendTokens.accessToken]);
+    }, [maintenanceId, session?.backendTokens.accessToken]);
 
     const fetchIncident = async () => {
         try {
@@ -98,13 +93,12 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
             const response = await axios.get(
-                BACKEND_URL + `/incident/${incidentId}`,
+                BACKEND_URL + `/incident/${maintenanceId}`,
                 config
             );
-
-            if (response.data.scheduledAt != null) {
-                router.replace(`/pages/${params.id}/incidents/edit-maintenance/${incidentId}`);
-                throw new Error("Maintenance is not an incident");
+            if (response.data.scheduledAt === null) {
+                router.replace(`/pages/${params.id}/incidents/edit/${maintenanceId}`);
+                throw new Error("Incident is not a maintenance");
             }
 
             setIncident(response.data);
@@ -133,7 +127,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
             };
 
             await axios.put(
-                BACKEND_URL + `/incident/status/${incidentId}`,
+                BACKEND_URL + `/incident/status/${maintenanceId}`,
                 updateData,
                 config
             );
@@ -151,7 +145,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
             await axios.delete(
-                BACKEND_URL + `/incident/${incidentId}`,
+                BACKEND_URL + `/incident/${maintenanceId}`,
                 config
             );
         } catch (error) {
@@ -183,24 +177,6 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
         <div className="w-[80vw] mt-6 flex flex-col items-center">
             <div className="w-[45vw] flex justify-between pb-10">
                 <h1 className="text-2xl font-bold">{incident.name}</h1>
-                <div className="flex items-center gap-4">
-                    <Label htmlFor="iSeverity">Severity</Label>
-                    <Select
-                        value={selectedSeverity}
-                        onValueChange={setSelectedSeverity}
-                    >
-                        <SelectTrigger className="w-[200px]" id="iSeverity">
-                            <SelectValue placeholder="Select severity" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {severityOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
             </div>
 
             <div className="w-[45vw] space-y-4">
@@ -231,7 +207,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="flex flex-col gap-4">
                     <div>
-                        <Label htmlFor="iStatus">Incident Status</Label>
+                        <Label htmlFor="iStatus">Maintenance Status</Label>
                         <Select
                             value={selectedStatus}
                             onValueChange={setSelectedStatus}
@@ -301,7 +277,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                     <AlertDialogTrigger asChild>
                         <Button variant="destructive">
                             <Trash className="mr-2 h-4 w-4" />
-                            Delete Incident
+                            Delete Maintenance
                         </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -309,7 +285,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 This action cannot be undone. This will permanently delete the
-                                incident and all its updates.
+                                maintenance and all its updates.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -328,7 +304,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                     onClick={handleUpdateIncident}
                     className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
                 >
-                    Update Incident
+                    Update Maintenance
                 </Button>
             </div>
         </div>

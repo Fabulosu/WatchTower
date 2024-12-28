@@ -15,7 +15,6 @@ export default async function ComponentsPage({ params }: { params: { id: number 
 
             const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
             const components: Component[] = response.data;
-            console.log(components)
             return <Components components={components} />
         }
     } catch (error) {
