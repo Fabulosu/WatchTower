@@ -19,13 +19,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { BACKEND_URL } from "@/lib/data";
-
-const getLatestStatus = (history: IncidentStatus[]) => {
-    return history
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
-        ?.status.toString();
-};
+import { BACKEND_URL, getLatestStatus } from "@/lib/utils";
 
 const statusMap: { [key: string]: string } = {
     "0": "Investigating",

@@ -7,9 +7,9 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { cn } from "@/lib/utils";
+import { cn, getLatestStatus } from "@/lib/utils";
 import Link from "next/link";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 
 const statusMap: { [key: string]: string } = {
     "0": "Investigating",
@@ -23,12 +23,6 @@ const maintenanceStatusMap: { [key: string]: string } = {
     "1": "In progress",
     "2": "Verifying",
     "3": "Completed",
-};
-
-const getLatestStatus = (history: IncidentStatus[]) => {
-    return history
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
-        ?.status.toString();
 };
 
 const StatusBadge = ({ status, type }: { status: string; type: number; }) => {

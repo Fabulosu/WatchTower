@@ -29,9 +29,10 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL, incidentStatusOptions, severityOptions } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
 
 interface Incident {
     id: number;
@@ -55,25 +56,12 @@ interface Component {
     status: string;
 }
 
-const severityOptions = [
-    { value: "None", label: "None" },
-    { value: "Minor", label: "Minor" },
-    { value: "Major", label: "Major" },
-    { value: "Critical", label: "Critical" },
-];
-
-const statusOptions = [
-    { value: "0", label: "Investigating" },
-    { value: "1", label: "Identified" },
-    { value: "2", label: "Monitoring" },
-    { value: "3", label: "Resolved" },
-];
-
-const componentStatusOptions = [
+export const componentStatusOptions = [
     { value: "1", icon: <FaCheckCircle className="text-green-500" size={16} />, label: "Operational" },
     { value: "2", icon: <FaMinusCircle className="text-yellow-500" size={16} />, label: "Degraded Performance" },
     { value: "3", icon: <FaCircleExclamation className="text-orange-500" size={16} />, label: "Partial Outage" },
     { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
+    { value: "5", icon: <BsWrenchAdjustableCircleFill className="text-blue-500" size={16} />, label: "Under Maintenance" },
 ];
 
 export default function UpdateIncident({ params }: { params: { id: number, incidentId: number } }) {
@@ -220,7 +208,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-sm font-medium">
-                                    {statusOptions.find(s => s.value === String(update.status))?.label}
+                                    {incidentStatusOptions.find(s => s.value === String(update.status))?.label}
                                 </span>
                                 <span className="text-sm text-muted-foreground">
                                     {format(new Date(update.createdAt), "MMM d, yyyy HH:mm")}
@@ -246,7 +234,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                                {statusOptions.map((option) => (
+                                {incidentStatusOptions.map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
                                         {option.label}
                                     </SelectItem>

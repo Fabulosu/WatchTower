@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
@@ -37,7 +37,6 @@ const componentStatusOptions = [
     { value: "4", icon: <FaCircleXmark className="text-red-500" size={16} />, label: "Major Outage" },
     { value: "5", icon: <BsWrenchAdjustableCircleFill className="text-blue-500" size={16} />, label: "Under Maintenance" },
 ];
-
 
 export default function EditComponent({ params }: { params: { id: number, componentId: number } }) {
     const router = useRouter();

@@ -1,5 +1,5 @@
 import { DashboardContent } from "@/components/dashboard-content";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import axios from "axios";
 
 type Page = {

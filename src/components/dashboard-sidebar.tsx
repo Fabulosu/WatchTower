@@ -20,7 +20,7 @@ import { ChevronDown, AlertCircle, Layers } from "lucide-react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";

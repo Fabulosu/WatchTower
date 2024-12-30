@@ -6,6 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const BACKEND_URL = "http://localhost:8000";
+
 export const calculateUptimeForDay = (statusHistory: ComponentStatus[], date: string) => {
   let totalDowntimeSeconds = 0;
   const startOfDay = dayjs(date).startOf("day");
@@ -35,4 +37,24 @@ export const calculateUptimeForDay = (statusHistory: ComponentStatus[], date: st
 export const calculateTotalUptime = (uptimeData: { day: string; uptime: number }[]) => {
   const totalUptime = uptimeData.reduce((acc, stat) => acc + stat.uptime, 0) / uptimeData.length;
   return totalUptime.toFixed(2);
+};
+
+export const severityOptions = [
+  { value: "None", label: "None" },
+  { value: "Minor", label: "Minor" },
+  { value: "Major", label: "Major" },
+  { value: "Critical", label: "Critical" },
+];
+
+export const incidentStatusOptions = [
+  { value: "0", label: "Investigating" },
+  { value: "1", label: "Identified" },
+  { value: "2", label: "Monitoring" },
+  { value: "3", label: "Resolved" },
+];
+
+export const getLatestStatus = (history: IncidentStatus[]) => {
+  return history
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    ?.status.toString();
 };

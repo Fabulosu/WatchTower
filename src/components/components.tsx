@@ -11,7 +11,7 @@ import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { useEffect, useState, useTransition } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import axios from "axios";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import {
     AlertDialog,

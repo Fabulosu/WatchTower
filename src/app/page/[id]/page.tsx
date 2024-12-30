@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BACKEND_URL } from '@/lib/data';
+import { BACKEND_URL, getLatestStatus } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { FaCircle } from 'react-icons/fa6';
 import {
@@ -14,12 +14,6 @@ import { CiCircleQuestion } from 'react-icons/ci';
 import Link from 'next/link';
 import { calculateTotalUptime, calculateUptimeForDay, cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
-
-const getLatestStatus = (history: IncidentStatus[]) => {
-    return parseInt(history
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
-        ?.status.toString());
-};
 
 export default function StatusPage({ params }: { params: { id: number } }) {
     const pageId = params.id;
@@ -60,11 +54,11 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                 setIncidentsByDay(incidentsGroupedByDay);
 
                 const maintenances = uniqueIncidents.filter(
-                    (incident) => incident.scheduledAt != null && getLatestStatus(incident.history) === 0
+                    (incident) => incident.scheduledAt != null && parseInt(getLatestStatus(incident.history)) === 0
                 );
 
                 const maintenancesInProgress = uniqueIncidents.filter(
-                    (incident) => incident.scheduledAt != null && getLatestStatus(incident.history) >= 1 && getLatestStatus(incident.history) < 3
+                    (incident) => incident.scheduledAt != null && parseInt(getLatestStatus(incident.history)) >= 1 && parseInt(getLatestStatus(incident.history)) < 3
                 );
 
                 const unresolvedIncidents = uniqueIncidents.filter(
@@ -328,7 +322,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                             {incidents.length > 0 ? (
                                 <div className="flex flex-col gap-2 py-2 rounded-lg mt-2">
                                     {incidents
-                                        .filter((incident) => (incident.scheduledAt ? getLatestStatus(incident.history) >= 1 : true))
+                                        .filter((incident) => (incident.scheduledAt ? parseInt(getLatestStatus(incident.history)) >= 1 : true))
                                         .map((incident) => (
                                             <div key={incident.id} className="bg-secondary p-4 rounded-lg">
                                                 <p className={`font-semibold text-xl ${incident.severity === "Minor" ? "text-yellow-500" : incident.severity === "Major" ? "text-orange-500" : incident.severity === "Critical" ? "text-red-500" : incident.severity === "Maintenance" ? "text-blue-500" : ""}`}>

@@ -1,6 +1,6 @@
 import { Components } from "@/components/components";
 import { authConfig } from "@/lib/auth";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import axios from "axios";
 import { getServerSession } from "next-auth";
 

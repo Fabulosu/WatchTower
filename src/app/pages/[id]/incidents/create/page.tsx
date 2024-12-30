@@ -18,7 +18,7 @@ import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL, incidentStatusOptions, severityOptions } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 interface Component {
@@ -26,20 +26,6 @@ interface Component {
     name: string;
     status: number;
 }
-
-const severityOptions = [
-    { value: "None", label: "None" },
-    { value: "Minor", label: "Minor" },
-    { value: "Major", label: "Major" },
-    { value: "Critical", label: "Critical" },
-];
-
-const statusOptions = [
-    { value: "0", label: "Investigating" },
-    { value: "1", label: "Identified" },
-    { value: "2", label: "Monitoring" },
-    { value: "3", label: "Resolved" },
-];
 
 const componentStatusOptions = [
     { value: "1", icon: <FaCheckCircle className="text-green-500" size={16} />, label: "Operational" },
@@ -228,7 +214,7 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                                {statusOptions.map(option => (
+                                {incidentStatusOptions.map(option => (
                                     <SelectItem key={option.value} value={option.value}>
                                         {option.label}
                                     </SelectItem>

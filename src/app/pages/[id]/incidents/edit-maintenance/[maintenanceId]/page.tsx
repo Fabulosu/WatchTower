@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
