@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import axios from "axios";
-import { BACKEND_URL } from "@/lib/data";
+import { BACKEND_URL } from "@/lib/utils";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
