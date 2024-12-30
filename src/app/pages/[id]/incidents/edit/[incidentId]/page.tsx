@@ -33,6 +33,7 @@ import { BACKEND_URL, incidentStatusOptions, severityOptions } from "@/lib/utils
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 interface Incident {
     id: number;
@@ -165,25 +166,23 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
-            </div>
+            <LoadingSpinner />
         );
     }
 
     if (!incident) return null;
 
     return (
-        <div className="w-[80vw] mt-6 flex flex-col items-center">
-            <div className="w-[45vw] flex justify-between pb-10">
-                <h1 className="text-2xl font-bold">{incident.name}</h1>
-                <div className="flex items-center gap-4">
-                    <Label htmlFor="iSeverity">Severity</Label>
+        <div className="w-full px-4 sm:px-6 md:w-[80vw] mt-4 sm:mt-6 flex flex-col items-center">
+            <div className="w-full md:w-[90vw] lg:w-[45vw] flex flex-col sm:flex-row justify-between gap-4 sm:gap-0 pb-6 sm:pb-10">
+                <h1 className="text-xl sm:text-2xl font-bold">{incident.name}</h1>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                    <Label htmlFor="iSeverity" className="sm:mb-0">Severity</Label>
                     <Select
                         value={selectedSeverity}
                         onValueChange={setSelectedSeverity}
                     >
-                        <SelectTrigger className="w-[200px]" id="iSeverity">
+                        <SelectTrigger className="w-full sm:w-[200px]" id="iSeverity">
                             <SelectValue placeholder="Select severity" />
                         </SelectTrigger>
                         <SelectContent>
@@ -197,40 +196,40 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4">
-                <h2 className="text-xl font-semibold">Update History</h2>
+            <div className="w-full md:w-[90vw] lg:w-[45vw] space-y-4">
+                <h2 className="text-lg sm:text-xl font-semibold">Update History</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="space-y-4">
                     {incident.history.map((update, index) => (
                         <div
                             key={index}
-                            className="bg-card/50 backdrop-blur-sm p-4 rounded-lg border border-card-foreground/10"
+                            className="bg-card/50 backdrop-blur-sm p-3 sm:p-4 rounded-lg border border-card-foreground/10"
                         >
-                            <div className="flex justify-between items-start mb-2">
-                                <span className="text-sm font-medium">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-2">
+                                <span className="text-xs sm:text-sm font-medium">
                                     {incidentStatusOptions.find(s => s.value === String(update.status))?.label}
                                 </span>
-                                <span className="text-sm text-muted-foreground">
+                                <span className="text-xs sm:text-sm text-muted-foreground">
                                     {format(new Date(update.createdAt), "MMM d, yyyy HH:mm")}
                                 </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">{update.statusMessage}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{update.statusMessage}</p>
                         </div>
                     )).reverse()}
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4 py-2">
-                <h2 className="text-xl font-semibold">Add New Update</h2>
+            <div className="w-full md:w-[90vw] lg:w-[45vw] space-y-4 py-2">
+                <h2 className="text-lg sm:text-xl font-semibold">Add New Update</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="flex flex-col gap-4">
                     <div>
-                        <Label htmlFor="iStatus">Incident Status</Label>
+                        <Label htmlFor="iStatus" className="mb-2">Incident Status</Label>
                         <Select
                             value={selectedStatus}
                             onValueChange={setSelectedStatus}
                         >
-                            <SelectTrigger className="w-[200px]" id="iStatus">
+                            <SelectTrigger className="w-full sm:w-[200px]" id="iStatus">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -243,35 +242,35 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                         </Select>
                     </div>
                     <div>
-                        <Label htmlFor="updateMessage" className="mt-2">Message</Label>
+                        <Label htmlFor="updateMessage" className="mb-2">Message</Label>
                         <Textarea
                             id="updateMessage"
                             placeholder="Update message..."
                             value={updateMessage}
                             onChange={(e) => setUpdateMessage(e.target.value)}
-                            className="min-h-[50px] drop-shadow-lg"
+                            className="min-h-[50px] drop-shadow-lg w-full"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4">
-                <h2 className="text-xl font-semibold">Affected Components</h2>
+            <div className="w-full md:w-[90vw] lg:w-[45vw] space-y-4">
+                <h2 className="text-lg sm:text-xl font-semibold">Affected Components</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="space-y-4">
                     {affectedComponents.map((component) => (
                         <div
                             key={component.id}
-                            className="flex items-center justify-between p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg"
+                            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 gap-3 sm:gap-0 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg"
                         >
-                            <span>{component.name}</span>
+                            <span className="text-sm sm:text-base">{component.name}</span>
                             <Select
                                 value={String(component.status)}
                                 onValueChange={(value) =>
                                     updateComponentStatus(component.id, value)
                                 }
                             >
-                                <SelectTrigger className="w-[220px]">
+                                <SelectTrigger className="w-full sm:w-[220px]">
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -290,15 +289,15 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                 </div>
             </div>
 
-            <div className="w-[45vw] flex justify-between py-4">
+            <div className="w-full md:w-[90vw] lg:w-[45vw] flex flex-col-reverse sm:flex-row justify-between gap-4 sm:gap-0 py-4">
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="destructive">
+                        <Button variant="destructive" className="w-full sm:w-auto">
                             <Trash className="mr-2 h-4 w-4" />
                             Delete Incident
                         </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="w-[95%] sm:w-full mx-auto">
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
@@ -306,11 +305,11 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                                 incident and all its updates.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+                            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleDeleteIncident}
-                                className="bg-red-500 hover:bg-red-600"
+                                className="w-full sm:w-auto bg-red-500 hover:bg-red-600"
                             >
                                 Delete
                             </AlertDialogAction>
@@ -320,7 +319,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
 
                 <Button
                     onClick={handleUpdateIncident}
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                    className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
                 >
                     Update Incident
                 </Button>

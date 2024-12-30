@@ -20,6 +20,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { BACKEND_URL, getLatestStatus } from "@/lib/utils";
+import LoadingSpinner from "./ui/loading-spinner";
 
 const statusMap: { [key: string]: string } = {
     "0": "Scheduled",
@@ -161,9 +162,7 @@ export function MaintenancesTab({ pageId }: { pageId: number }) {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
-            </div>
+            <LoadingSpinner />
         );
     }
 

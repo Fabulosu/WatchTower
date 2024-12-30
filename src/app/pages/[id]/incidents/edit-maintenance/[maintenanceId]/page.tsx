@@ -33,6 +33,7 @@ import { BACKEND_URL } from "@/lib/utils";
 import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 interface Incident {
     id: number;
@@ -171,21 +172,19 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
-            </div>
+            <LoadingSpinner />
         );
     }
 
     if (!incident) return null;
 
     return (
-        <div className="w-[80vw] mt-6 flex flex-col items-center">
-            <div className="w-[45vw] flex justify-between pb-10">
+        <div className="w-screen md:w-[80vw] mt-6 flex flex-col items-center px-4 md:px-0">
+            <div className="w-full md:w-[45vw] flex justify-between pb-10">
                 <h1 className="text-2xl font-bold">{incident.name}</h1>
             </div>
 
-            <div className="w-[45vw] space-y-4">
+            <div className="w-full md:w-[45vw] space-y-4">
                 <h2 className="text-xl font-semibold">Update History</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="space-y-4">
@@ -194,7 +193,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                             key={index}
                             className="bg-card/50 backdrop-blur-sm p-4 rounded-lg border border-card-foreground/10"
                         >
-                            <div className="flex justify-between items-start mb-2">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-2">
                                 <span className="text-sm font-medium">
                                     {statusOptions.find(s => s.value === String(update.status))?.label}
                                 </span>
@@ -208,7 +207,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4 py-2">
+            <div className="w-full md:w-[45vw] space-y-4 py-2">
                 <h2 className="text-xl font-semibold">Add New Update</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="flex flex-col gap-4">
@@ -218,7 +217,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                             value={selectedStatus}
                             onValueChange={setSelectedStatus}
                         >
-                            <SelectTrigger className="w-[200px]" id="iStatus">
+                            <SelectTrigger className="w-full md:w-[200px]" id="iStatus">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -243,23 +242,23 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4">
+            <div className="w-full md:w-[45vw] space-y-4">
                 <h2 className="text-xl font-semibold">Affected Components</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="space-y-4">
                     {affectedComponents.map((component) => (
                         <div
                             key={component.id}
-                            className="flex items-center justify-between p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg"
+                            className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-0 md:justify-between p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg"
                         >
-                            <span>{component.name}</span>
+                            <span className="text-sm md:text-base">{component.name}</span>
                             <Select
                                 value={String(component.status)}
                                 onValueChange={(value) =>
                                     updateComponentStatus(component.id, value)
                                 }
                             >
-                                <SelectTrigger className="w-[220px]">
+                                <SelectTrigger className="w-full md:w-[220px]">
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -278,15 +277,15 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                 </div>
             </div>
 
-            <div className="w-[45vw] flex justify-between py-4">
+            <div className="w-full md:w-[45vw] flex flex-col md:flex-row gap-4 md:gap-0 justify-between py-4">
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="destructive">
+                        <Button variant="destructive" className="w-full md:w-auto">
                             <Trash className="mr-2 h-4 w-4" />
                             Delete Maintenance
                         </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="w-[90vw] md:w-auto mx-4 md:mx-0">
                         <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                             <AlertDialogDescription>
@@ -294,7 +293,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                                 maintenance and all its updates.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter>
+                        <AlertDialogFooter className="flex flex-col md:flex-row gap-2 md:gap-0">
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleDeleteMaintenance}
@@ -308,7 +307,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
 
                 <Button
                     onClick={handleUpdateMaintenance}
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                    className="w-full md:w-auto bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
                 >
                     Update Maintenance
                 </Button>

@@ -156,8 +156,8 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
     };
 
     return (
-        <div className="w-[80vw] mt-6 flex flex-col items-center">
-            <div className="w-[45vw] space-y-4">
+        <div className="w-screen md:w-[80vw] mt-6 flex flex-col items-center px-4 md:px-0">
+            <div className="w-full md:w-[45vw] space-y-4">
                 <h2 className="text-xl font-semibold">Schedule Maintenance</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="flex flex-col gap-4">
@@ -176,35 +176,41 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                     </div>
                     <div className="flex flex-col gap-2">
                         <Label htmlFor="scheduleDate">Scheduled Time</Label>
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 md:justify-between">
                             <DatePicker
                                 defaultValue={new Date()}
                                 onChange={(val) => {
                                     val && setScheduleDate(val.toLocaleDateString('en-CA'));
                                 }}
                             />
-                            <Input
-                                type="time"
-                                defaultValue={new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}
-                                className="w-auto shadow-lg"
-                                onChange={(e) => setScheduleTime(e.target.value)}
-                                required
-                            />
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    type="time"
+                                    defaultValue={new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}
+                                    className="w-auto shadow-lg"
+                                    onChange={(e) => setScheduleTime(e.target.value)}
+                                    required
+                                />
+                            </div>
                             <p>for</p>
-                            <Input
-                                type="number"
-                                value={scheduleDurationHours}
-                                onChange={(e) => setScheduleDurationHours(Number(e.target.value))}
-                                className="w-24 shadow-lg"
-                            />
-                            <p>hours</p>
-                            <Input
-                                type="number"
-                                value={scheduleDurationMinutes}
-                                onChange={(e) => setScheduleDurationMinutes(Number(e.target.value))}
-                                className="w-24 shadow-lg"
-                            />
-                            <p>minutes</p>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    type="number"
+                                    value={scheduleDurationHours}
+                                    onChange={(e) => setScheduleDurationHours(Number(e.target.value))}
+                                    className="w-20 shadow-lg"
+                                />
+                                <p>hours</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    type="number"
+                                    value={scheduleDurationMinutes}
+                                    onChange={(e) => setScheduleDurationMinutes(Number(e.target.value))}
+                                    className="w-20 shadow-lg"
+                                />
+                                <p>minutes</p>
+                            </div>
                         </div>
                         {formErrors.scheduleDate && (
                             <p className="text-red-500 text-xs mt-1">{formErrors.scheduleDate}</p>
@@ -235,14 +241,13 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4 py-4">
-                <div className="flex items-center">
+            <div className="w-full md:w-[45vw] space-y-4 py-4">
+                <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">Affected Components</h2>
                     <Button
                         onClick={() => {
                             if (selectedComponents.length === components.length) {
                                 setSelectedComponents([]);
-
                             } else {
                                 setSelectedComponents(components);
                             }
@@ -282,10 +287,10 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                 )}
             </div>
 
-            <div className="w-[45vw] flex justify-end py-2">
+            <div className="w-full md:w-[45vw] md:flex md:justify-end py-2">
                 <Button
                     onClick={handleCreateMaintenance}
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
                 >
                     Schedule Maintenance
                 </Button>

@@ -87,27 +87,27 @@ export default function EditComponent({ params }: { params: { id: number, compon
                 toast.success("Component updated successfully!");
             }
         } catch (error) {
-            console.error("Error creating component:", error);
+            console.error("Error updating component:", error);
         }
     }
 
     return (
         <motion.div
-            className="w-[80vw] mt-6 flex flex-col items-center"
+            className="w-full px-4 md:w-[80vw] mt-6 flex flex-col items-center"
             initial="initial"
             animate="animate"
             variants={fadeIn}
         >
             <motion.div
-                className="w-[45vw] space-y-2"
+                className="w-full md:w-[90vw] lg:w-[45vw] space-y-2 max-w-2xl"
                 variants={fadeIn}
             >
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold text-background-foreground">
-                        Create new component
+                    <h2 className="text-xl md:text-2xl font-semibold text-background-foreground">
+                        Edit component
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                        Add a new component to monitor in your status page
+                        Edit the details of your component
                     </p>
                 </div>
 
@@ -132,19 +132,17 @@ export default function EditComponent({ params }: { params: { id: number, compon
                                 placeholder="Enter component name..."
                                 value={componentName}
                                 onChange={(e) => setComponentName(e.target.value)}
-                                className=" border-gray-300"
+                                className="w-full border-gray-300"
                             />
                         </motion.div>
                     </div>
 
                     <div className="space-y-2">
-
                         <Label
                             htmlFor="componentStatus"
                             className="text-sm font-medium text-muted-foreground"
                         >
                             Component status
-
                         </Label>
                         <Select
                             value={String(componentStatus)}
@@ -155,7 +153,7 @@ export default function EditComponent({ params }: { params: { id: number, compon
                             <SelectTrigger id="componentStatus" className="w-full">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="w-full min-w-[200px]">
                                 {componentStatusOptions.map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
                                         <div className="flex flex-row items-center gap-2">
@@ -183,7 +181,7 @@ export default function EditComponent({ params }: { params: { id: number, compon
                                 placeholder="Describe your component..."
                                 value={componentDescription}
                                 onChange={(e) => setComponentDescription(e.target.value)}
-                                className=" border-gray-300"
+                                className="w-full border-gray-300"
                             />
                         </motion.div>
                     </div>
@@ -196,14 +194,14 @@ export default function EditComponent({ params }: { params: { id: number, compon
                             Display uptime
                         </Label>
                         <motion.div
-                            className="flex items-center gap-3 p-3 rounded-md"
+                            className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-md"
                         >
                             <Checkbox
                                 id="displayUptime"
                                 defaultChecked={displayUptime}
                                 onCheckedChange={() => setDisplayUptime(!displayUptime)}
                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 
-                              focus:ring-blue-500 transition-colors duration-200"
+                              focus:ring-blue-500 transition-colors duration-200 mt-1 sm:mt-0"
                             />
                             <Label
                                 htmlFor="displayUptime"
@@ -224,10 +222,11 @@ export default function EditComponent({ params }: { params: { id: number, compon
                     <motion.div
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
+                        className="w-full sm:w-auto"
                     >
                         <Button
                             onClick={handleUpdateComponent}
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                            className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
                         >
                             Update Component
                         </Button>

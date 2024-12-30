@@ -34,8 +34,6 @@ export default function CreatePage() {
             return;
         }
 
-        console.log(pageName, companyWebsite, supportURL);
-
         try {
             const response = await axios.post(BACKEND_URL + `/page`, {
                 name: pageName,
@@ -61,17 +59,17 @@ export default function CreatePage() {
         <>
             <Navbar />
             <motion.div
-                className="w-full pt-24 flex flex-col items-center"
+                className="w-full pt-24 px-4 flex flex-col items-center"
                 initial="initial"
                 animate="animate"
                 variants={fadeIn}
             >
                 <motion.div
-                    className="w-[45vw] space-y-2"
+                    className="w-full md:w-[90vw] lg:w-[45vw] space-y-2 max-w-2xl"
                     variants={fadeIn}
                 >
                     <div className="space-y-2">
-                        <h2 className="text-2xl font-semibold text-background-foreground">
+                        <h2 className="text-xl md:text-2xl font-semibold text-background-foreground">
                             Configure Your Status Page
                         </h2>
                         <p className="text-sm text-muted-foreground">
@@ -100,7 +98,7 @@ export default function CreatePage() {
                                     placeholder="Enter a descriptive name for your status page"
                                     value={pageName}
                                     onChange={(e) => setPageName(e.target.value)}
-                                    className="border-gray-300"
+                                    className="w-full border-gray-300"
                                 />
                             </motion.div>
                         </div>
@@ -120,7 +118,7 @@ export default function CreatePage() {
                                     placeholder="https://your-company-website.com"
                                     value={companyWebsite}
                                     onChange={(e) => setCompanyWebsite(e.target.value)}
-                                    className=" border-gray-300"
+                                    className="w-full border-gray-300"
                                 />
                             </motion.div>
                         </div>
@@ -140,7 +138,7 @@ export default function CreatePage() {
                                     placeholder="https://support.your-company.com"
                                     value={supportURL}
                                     onChange={(e) => setSupportURL(e.target.value)}
-                                    className=" border-gray-300"
+                                    className="w-full border-gray-300"
                                 />
                             </motion.div>
                         </div>
@@ -153,14 +151,14 @@ export default function CreatePage() {
                                 Terms of Service Agreement
                             </Label>
                             <motion.div
-                                className="flex items-center gap-3 p-3 rounded-md"
+                                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-md"
                             >
                                 <Checkbox
                                     id="acceptTos"
                                     defaultChecked={acceptTos}
                                     onCheckedChange={() => setAcceptTos(!acceptTos)}
                                     className="h-4 w-4 rounded border-gray-300 text-blue-600 
-                              focus:ring-blue-500 transition-colors duration-200"
+                                  focus:ring-blue-500 transition-colors duration-200 mt-1 sm:mt-0"
                                 />
                                 <Label
                                     htmlFor="acceptTos"
@@ -175,16 +173,17 @@ export default function CreatePage() {
                     <Separator className="h-[1px] bg-gray-300" />
 
                     <motion.div
-                        className="flex justify-end pt-4"
+                        className="flex justify-end pt-4 w-full"
                         variants={fadeIn}
                     >
                         <motion.div
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
+                            className="w-full sm:w-auto"
                         >
                             <Button
                                 onClick={handleCreatePage}
-                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
                             >
                                 Initialize Status Page
                             </Button>

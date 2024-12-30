@@ -165,31 +165,31 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
     };
 
     return (
-        <div className="w-[80vw] mt-6 flex flex-col items-center">
-            <div className="w-[45vw] space-y-4">
-                <h2 className="text-xl font-semibold">Create New Incident</h2>
+        <div className="w-screen px-4 sm:px-6 md:w-[80vw] mt-4 sm:mt-6 flex flex-col items-center">
+            <div className="w-full md:w-[90vw] lg:w-[45vw] space-y-4">
+                <h2 className="text-lg sm:text-xl font-semibold">Create New Incident</h2>
                 <Separator className="w-full h-[2px] bg-gray-300 my-2" />
                 <div className="flex flex-col gap-4">
                     <div>
-                        <Label htmlFor="incidentName">Incident Name</Label>
+                        <Label htmlFor="incidentName" className="mb-2">Incident Name</Label>
                         <Textarea
                             id="incidentName"
                             placeholder="Incident name..."
                             value={incidentName}
                             onChange={(e) => setIncidentName(e.target.value)}
-                            className="min-h-10 drop-shadow-lg resize-none"
+                            className="w-full min-h-10 drop-shadow-lg resize-none"
                         />
                         {formErrors.incidentName && (
                             <p className="text-red-500 text-xs mt-1">{formErrors.incidentName}</p>
                         )}
                     </div>
                     <div>
-                        <Label htmlFor="severity">Severity</Label>
+                        <Label htmlFor="severity" className="mb-2">Severity</Label>
                         <Select
                             value={selectedSeverity}
                             onValueChange={setSelectedSeverity}
                         >
-                            <SelectTrigger className="w-[200px]" id="severity">
+                            <SelectTrigger className="w-full sm:w-[200px]" id="severity">
                                 <SelectValue placeholder="Select severity" />
                             </SelectTrigger>
                             <SelectContent>
@@ -205,12 +205,12 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                         )}
                     </div>
                     <div>
-                        <Label htmlFor="status">Incident Status</Label>
+                        <Label htmlFor="status" className="mb-2">Incident Status</Label>
                         <Select
                             value={selectedStatus}
                             onValueChange={setSelectedStatus}
                         >
-                            <SelectTrigger className="w-[200px]" id="status">
+                            <SelectTrigger className="w-full sm:w-[200px]" id="status">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -223,31 +223,31 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                         </Select>
                     </div>
                     <div>
-                        <Label htmlFor="updateMessage">Message</Label>
+                        <Label htmlFor="updateMessage" className="mb-2">Message</Label>
                         <Textarea
                             id="updateMessage"
                             placeholder="Update message..."
                             value={updateMessage}
                             onChange={(e) => setUpdateMessage(e.target.value)}
-                            className="min-h-[50px] drop-shadow-lg"
+                            className="w-full min-h-[50px] drop-shadow-lg"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="w-[45vw] space-y-4 py-4">
-                <div className="flex items-center">
-                    <h2 className="text-xl font-semibold">Affected Components</h2>
+            <div className="w-full md:w-[90vw] lg:w-[45vw] space-y-4 py-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                    <h2 className="text-lg sm:text-xl font-semibold">Affected Components</h2>
                     <Button
                         onClick={() => {
                             if (selectedComponents.length === components.length) {
                                 setSelectedComponents([]);
-
                             } else {
                                 setSelectedComponents(components);
                             }
                         }}
                         variant="link"
+                        className="p-0 h-auto"
                     >
                         {selectedComponents.length === components.length ? "Deselect All" : "Select All"}
                     </Button>
@@ -262,7 +262,7 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                         return (
                             <div
                                 key={component.id}
-                                className="flex items-center justify-between p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg min-h-[72px]"
+                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 gap-3 sm:gap-4 bg-card/50 backdrop-blur-sm rounded-lg border border-card-foreground/10 shadow-lg"
                             >
                                 <span className="flex items-center gap-2">
                                     <Checkbox
@@ -271,9 +271,9 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                                             toggleComponentSelection(component)
                                         }
                                     />
-                                    <p>{component.name}</p>
+                                    <p className="text-sm sm:text-base">{component.name}</p>
                                 </span>
-                                <div className="w-[220px] h-[40px]">
+                                <div className="w-full sm:w-[220px]">
                                     {isSelected && (
                                         <Select
                                             value={String(component.status)}
@@ -281,7 +281,7 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                                                 updateComponentStatus(component.id, parseInt(value))
                                             }
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select status" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -309,10 +309,10 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                 )}
             </div>
 
-            <div className="w-[45vw] flex justify-end py-2">
+            <div className="w-full md:w-[90vw] lg:w-[45vw] flex justify-end py-2">
                 <Button
                     onClick={handleCreateIncident}
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                    className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
                 >
                     Create Incident
                 </Button>

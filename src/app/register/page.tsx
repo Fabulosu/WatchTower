@@ -266,7 +266,7 @@ export default function RegisterPage() {
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-background via-background to-background/50 -z-10" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] rounded-full bg-gradient-to-r from-green-500/30 to-blue-500/30 blur-[120px] -z-10" />
 
-            <main className="relative container mx-auto px-5 min-h-screen flex items-center justify-center py-20">
+            <main className="relative container mx-auto px-2 sm:px-5 min-h-screen flex items-center justify-center py-20">
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
@@ -278,7 +278,7 @@ export default function RegisterPage() {
 
                     <motion.form
                         variants={itemVariants}
-                        className="relative backdrop-blur-sm bg-card/50 border border-card-foreground/10 rounded-2xl p-8 shadow-xl"
+                        className="relative backdrop-blur-sm bg-card/50 border border-card-foreground/10 rounded-2xl py-8 px-2 sm:px-8 shadow-xl"
                         onSubmit={onSubmit}
                     >
                         <motion.div variants={itemVariants} className="text-center mb-8">

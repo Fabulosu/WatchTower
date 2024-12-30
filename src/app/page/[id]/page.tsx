@@ -14,6 +14,7 @@ import { CiCircleQuestion } from 'react-icons/ci';
 import Link from 'next/link';
 import { calculateTotalUptime, calculateUptimeForDay, cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 
 export default function StatusPage({ params }: { params: { id: number } }) {
     const pageId = params.id;
@@ -178,10 +179,8 @@ export default function StatusPage({ params }: { params: { id: number } }) {
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
-            </div>
-        )
+            <LoadingSpinner />
+        );
     }
 
     if (!pageData) {
