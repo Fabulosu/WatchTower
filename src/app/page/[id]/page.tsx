@@ -382,7 +382,7 @@ export default function StatusPage({ params }: { params: { id: number } }) {
                                                     </div>
                                                 )}
                                             </div>
-                                        ))}
+                                        )).reverse()}
                                 </div>
                             ) : (
                                 <p className="text-muted-foreground py-2">No incidents reported today.</p>

@@ -58,10 +58,14 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
 
+            console.log(scheduleDate, scheduleTime, scheduleDurationHours, scheduleDurationMinutes);
+
             const scheduledAt = new Date(new Date(scheduleDate).toDateString() + ' ' + scheduleTime);
             const completeAt = new Date(scheduledAt);
             completeAt.setHours(completeAt.getHours() + (scheduleDurationHours || 0));
             completeAt.setMinutes(completeAt.getMinutes() + (scheduleDurationMinutes || 0));
+
+            console.log(scheduledAt)
 
             const maintenanceDate = {
                 name: maintenanceName,
@@ -124,7 +128,7 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                             <DatePicker
                                 defaultValue={new Date()}
                                 onChange={(val) => {
-                                    val && setScheduleDate(val.toISOString().split('T')[0]);
+                                    val && setScheduleDate(val.toLocaleDateString('en-CA'));
                                 }}
                             />
                             <Input
@@ -163,11 +167,11 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                     </div>
 
                     <div className="flex gap-2 items-center">
-                        <Checkbox id="auto_start" checked={autoStart} onCheckedChange={() => setAutoStart(!autoStart)} disabled />
+                        <Checkbox id="auto_start" checked={autoStart} onCheckedChange={() => setAutoStart(!autoStart)} />
                         <Label htmlFor="auto_start">Automatically start maintenance at scheduled time</Label>
                     </div>
                     <div className="flex gap-2 items-center">
-                        <Checkbox id="auto_end" checked={autoEnd} onCheckedChange={() => setAutoEnd(!autoEnd)} disabled />
+                        <Checkbox id="auto_end" checked={autoEnd} onCheckedChange={() => setAutoEnd(!autoEnd)} />
                         <Label htmlFor="auto_end">Automatically end maintenance after scheduled time</Label>
                     </div>
                 </div>

@@ -35,7 +35,7 @@ export function DashboardContent({ pageData }: { pageData: { name: string; id: n
             </div>
 
             <Tabs defaultValue="open" className="w-[50vw]">
-                <TabsList className="grid w-full grid-cols-4 gap-4 rounded-xl p-1 bg-card/50 backdrop-blur-sm">
+                <TabsList className="grid w-full grid-cols-3 gap-4 rounded-xl p-1 bg-card/50 backdrop-blur-sm">
                     <TabsTrigger
                         value="open"
                         className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black"
@@ -53,12 +53,6 @@ export function DashboardContent({ pageData }: { pageData: { name: string; id: n
                         className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black"
                     >
                         Maintenances
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="templates"
-                        className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-black"
-                    >
-                        Templates
                     </TabsTrigger>
                 </TabsList>
 
@@ -96,12 +90,6 @@ export function DashboardContent({ pageData }: { pageData: { name: string; id: n
                             </Link>
                         </div>
                         <MaintenancesTab pageId={pageData?.id} />
-                    </div>
-                </TabsContent>
-
-                <TabsContent value="templates" className="mt-6">
-                    <div className="rounded-xl bg-card/30 backdrop-blur-sm border border-card-foreground/10 p-6">
-                        <h3 className="text-xl font-semibold mb-4">Incident Templates</h3>
                     </div>
                 </TabsContent>
             </Tabs>
