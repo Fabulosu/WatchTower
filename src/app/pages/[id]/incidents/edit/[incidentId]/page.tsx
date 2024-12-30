@@ -31,6 +31,7 @@ import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { BACKEND_URL } from "@/lib/data";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface Incident {
     id: number;
@@ -140,8 +141,10 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
 
             fetchIncident();
             setUpdateMessage("");
+            toast.success("Incident updated successfully");
         } catch (error) {
             console.error("Error updating incident:", error);
+            toast.error("Failed to update incident");
         }
     };
 
@@ -154,8 +157,11 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
                 BACKEND_URL + `/incident/${incidentId}`,
                 config
             );
+            toast.success("Incident deleted successfully");
+            router.push(`/pages/${params.id}/incidents`);
         } catch (error) {
             console.error("Error deleting incident:", error);
+            toast.error("Failed to delete incident");
         }
     };
 

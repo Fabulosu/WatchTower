@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/data";
+import toast from "react-hot-toast";
 
 const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -42,6 +43,7 @@ export default function CreateComponent({ params }: { params: { id: number } }) 
             if (response.status === 201) {
                 router.push(`/pages/${params.id}/components`);
                 router.refresh();
+                toast.success("Component created successfully!");
             }
         } catch (error) {
             console.error("Error creating component:", error);

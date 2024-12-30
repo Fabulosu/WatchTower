@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/data";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
 
 interface Component {
     id: number;
@@ -22,6 +23,7 @@ interface Component {
 export default function CreateMaintenance({ params }: { params: { id: string } }) {
     const router = useRouter();
     const { data: session } = useSession();
+
     const [maintenanceName, setMaintenanceName] = useState("");
     const [maintenanceMessage, setMaintenanceMessage] = useState("");
     const [scheduleDate, setScheduleDate] = useState("");
@@ -30,9 +32,15 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
     const [scheduleDurationMinutes, setScheduleDurationMinutes] = useState<number | undefined>(0);
     const [autoStart, setAutoStart] = useState(false);
     const [autoEnd, setAutoEnd] = useState(false);
-
     const [components, setComponents] = useState<Component[]>([]);
     const [selectedComponents, setSelectedComponents] = useState<Component[]>([]);
+    const [formErrors, setFormErrors] = useState({
+        maintenanceName: '',
+        scheduleDate: '',
+        scheduleTime: '',
+        scheduleDuration: '',
+        selectedComponents: ''
+    });
 
     useEffect(() => {
         if (session?.backendTokens.accessToken) {
@@ -52,22 +60,61 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {
+            maintenanceName: '',
+            scheduleDate: '',
+            scheduleTime: '',
+            scheduleDuration: '',
+            selectedComponents: ''
+        };
+
+        let isValid = true;
+
+        if (maintenanceName.length < 3) {
+            newErrors.maintenanceName = 'Maintenance name must be at least 3 characters long';
+            isValid = false;
+        } else if (maintenanceName.length > 50) {
+            newErrors.maintenanceName = 'Maintenance name must be less than 50 characters';
+            isValid = false;
+        }
+
+        const scheduledAt = new Date(new Date(scheduleDate).toDateString() + ' ' + scheduleTime);
+        if (scheduledAt <= new Date()) {
+            newErrors.scheduleDate = 'Scheduled date and time must be in the future';
+            isValid = false;
+        }
+
+        if ((scheduleDurationHours || 0) <= 0 && (scheduleDurationMinutes || 0) <= 0) {
+            newErrors.scheduleDuration = 'Duration must be greater than 0';
+            isValid = false;
+        }
+
+        if (selectedComponents.length === 0) {
+            newErrors.selectedComponents = 'At least one component must be selected';
+            isValid = false;
+        }
+
+        setFormErrors(newErrors);
+        return isValid;
+    };
+
     const handleCreateMaintenance = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
-
-            console.log(scheduleDate, scheduleTime, scheduleDurationHours, scheduleDurationMinutes);
 
             const scheduledAt = new Date(new Date(scheduleDate).toDateString() + ' ' + scheduleTime);
             const completeAt = new Date(scheduledAt);
             completeAt.setHours(completeAt.getHours() + (scheduleDurationHours || 0));
             completeAt.setMinutes(completeAt.getMinutes() + (scheduleDurationMinutes || 0));
 
-            console.log(scheduledAt)
-
-            const maintenanceDate = {
+            const maintenanceData = {
                 name: maintenanceName,
                 severity: "Maintenance",
                 statusCode: 0,
@@ -80,11 +127,13 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                 completeAt,
             };
 
-            const response = await axios.post(BACKEND_URL + "/incident", maintenanceDate, config);
+            const response = await axios.post(BACKEND_URL + "/incident", maintenanceData, config);
             if (response.data.id) {
+                toast.success("Maintenance scheduled successfully!");
                 router.replace(`/pages/${params.id}/incidents`);
             }
         } catch (error) {
+            toast.error("Error creating maintenance.");
             console.error("Error creating maintenance:", error);
         }
     };
@@ -121,6 +170,9 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                             onChange={(e) => setMaintenanceName(e.target.value)}
                             className="min-h-10 drop-shadow-lg resize-none"
                         />
+                        {formErrors.maintenanceName && (
+                            <p className="text-red-500 text-xs mt-1">{formErrors.maintenanceName}</p>
+                        )}
                     </div>
                     <div className="flex flex-col gap-2">
                         <Label htmlFor="scheduleDate">Scheduled Time</Label>
@@ -154,6 +206,12 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                             />
                             <p>minutes</p>
                         </div>
+                        {formErrors.scheduleDate && (
+                            <p className="text-red-500 text-xs mt-1">{formErrors.scheduleDate}</p>
+                        )}
+                        {formErrors.scheduleDuration && (
+                            <p className="text-red-500 text-xs mt-1">{formErrors.scheduleDuration}</p>
+                        )}
                     </div>
                     <div>
                         <Label htmlFor="maintenanceMessage">Message</Label>
@@ -219,6 +277,9 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                         );
                     })}
                 </div>
+                {formErrors.selectedComponents && (
+                    <p className="text-red-500 text-xs mt-1">{formErrors.selectedComponents}</p>
+                )}
             </div>
 
             <div className="w-[45vw] flex justify-end py-2">

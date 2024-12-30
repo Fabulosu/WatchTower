@@ -22,6 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import toast from "react-hot-toast";
 
 const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -84,8 +85,7 @@ export default function EditComponent({ params }: { params: { id: number, compon
             });
 
             if (response.status === 200) {
-                router.replace(`/pages/${params.id}/components`);
-                router.refresh();
+                toast.success("Component updated successfully!");
             }
         } catch (error) {
             console.error("Error creating component:", error);

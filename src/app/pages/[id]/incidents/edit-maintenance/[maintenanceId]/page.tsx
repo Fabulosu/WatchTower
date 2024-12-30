@@ -32,6 +32,7 @@ import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { BACKEND_URL } from "@/lib/data";
 import { BsWrenchAdjustableCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface Incident {
     id: number;
@@ -110,7 +111,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
         }
     };
 
-    const handleUpdateIncident = async () => {
+    const handleUpdateMaintenance = async () => {
         try {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
@@ -134,12 +135,14 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
 
             fetchIncident();
             setUpdateMessage("");
+            toast.success("Maintenance updated successfully");
         } catch (error) {
-            console.error("Error updating incident:", error);
+            console.error("Error updating maintenance:", error);
+            toast.error("Failed to update maintenance");
         }
     };
 
-    const handleDeleteIncident = async () => {
+    const handleDeleteMaintenance = async () => {
         try {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
@@ -148,8 +151,11 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                 BACKEND_URL + `/incident/${maintenanceId}`,
                 config
             );
+            toast.success("Maintenance deleted successfully");
+            router.replace(`/pages/${params.id}/incidents`);
         } catch (error) {
-            console.error("Error deleting incident:", error);
+            console.error("Error deleting maintenance:", error);
+            toast.error("Failed to delete maintenance");
         }
     };
 
@@ -291,7 +297,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                                onClick={handleDeleteIncident}
+                                onClick={handleDeleteMaintenance}
                                 className="bg-red-500 hover:bg-red-600"
                             >
                                 Delete
@@ -301,7 +307,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
                 </AlertDialog>
 
                 <Button
-                    onClick={handleUpdateIncident}
+                    onClick={handleUpdateMaintenance}
                     className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
                 >
                     Update Maintenance

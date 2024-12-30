@@ -19,6 +19,7 @@ import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/data";
+import toast from "react-hot-toast";
 
 interface Component {
     id: number;
@@ -56,6 +57,11 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
     const [updateMessage, setUpdateMessage] = useState("");
     const [components, setComponents] = useState<Component[]>([]);
     const [selectedComponents, setSelectedComponents] = useState<Component[]>([]);
+    const [formErrors, setFormErrors] = useState({
+        incidentName: '',
+        severity: '',
+        selectedComponents: ''
+    });
 
     useEffect(() => {
         if (session?.backendTokens.accessToken) {
@@ -75,7 +81,39 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {
+            incidentName: '',
+            severity: '',
+            selectedComponents: ''
+        };
+
+        let isValid = true;
+
+        if (incidentName.trim() === '') {
+            newErrors.incidentName = 'Incident name is required';
+            isValid = false;
+        }
+
+        if (selectedSeverity.trim() === '') {
+            newErrors.severity = 'Severity is required';
+            isValid = false;
+        }
+
+        if (selectedComponents.length === 0) {
+            newErrors.selectedComponents = 'At least one component must be selected';
+            isValid = false;
+        }
+
+        setFormErrors(newErrors);
+        return isValid;
+    };
+
     const handleCreateIncident = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
@@ -100,8 +138,11 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                         status: component.status,
                     })),
                 }, config);
+
+                toast.success("Incident created successfully!");
             }
         } catch (error) {
+            toast.error("Error creating incident.");
             console.error("Error creating incident:", error);
         }
     };
@@ -152,6 +193,9 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                             onChange={(e) => setIncidentName(e.target.value)}
                             className="min-h-10 drop-shadow-lg resize-none"
                         />
+                        {formErrors.incidentName && (
+                            <p className="text-red-500 text-xs mt-1">{formErrors.incidentName}</p>
+                        )}
                     </div>
                     <div>
                         <Label htmlFor="severity">Severity</Label>
@@ -170,6 +214,9 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                                 ))}
                             </SelectContent>
                         </Select>
+                        {formErrors.severity && (
+                            <p className="text-red-500 text-xs mt-1">{formErrors.severity}</p>
+                        )}
                     </div>
                     <div>
                         <Label htmlFor="status">Incident Status</Label>
@@ -271,6 +318,9 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
                         );
                     })}
                 </div>
+                {formErrors.selectedComponents && (
+                    <p className="text-red-500 text-xs mt-1">{formErrors.selectedComponents}</p>
+                )}
             </div>
 
             <div className="w-[45vw] flex justify-end py-2">

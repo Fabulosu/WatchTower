@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import Navbar from "@/components/navbar";
 import { motion } from "framer-motion";
 import Footer from "@/components/footer";
+import { toast } from 'react-hot-toast';
 
 export default function LoginPage() {
     const { data: session } = useSession();
@@ -22,14 +23,31 @@ export default function LoginPage() {
     const usernameRef = useRef<HTMLInputElement>(null);
     const passRef = useRef<HTMLInputElement>(null);
 
+
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await signIn("credentials", {
-            email: usernameRef.current?.value,
-            password: passRef.current?.value,
-            redirect: true,
-            callbackUrl: "http://localhost:3000/"
-        });
+        try {
+            const result = await signIn("credentials", {
+                email: usernameRef.current?.value,
+                password: passRef.current?.value,
+                redirect: true,
+                callbackUrl: "http://localhost:3000/pages"
+            });
+
+            if (result?.error) {
+                if (result.error === "CredentialsSignin") {
+                    toast.error("Invalid credentials. Please try again.");
+                } else {
+                    toast.error(result.error);
+                }
+            } else {
+                toast.success("Welcome back!");
+                router.replace(result?.url || "/");
+            }
+
+        } catch (error) {
+            toast.error("An unexpected error occurred.");
+        }
     }
 
     const containerVariants = {

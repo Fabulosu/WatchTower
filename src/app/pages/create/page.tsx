@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/data";
 import Navbar from "@/components/navbar";
+import toast from "react-hot-toast";
 
 const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -49,6 +50,7 @@ export default function CreatePage() {
             if (response.status === 201) {
                 router.push(`/pages/${response.data.id}/components`);
                 router.refresh();
+                toast.success("Status page created successfully!");
             }
         } catch (error) {
             console.error("Error creating page:", error);

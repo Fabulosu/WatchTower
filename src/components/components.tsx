@@ -27,6 +27,7 @@ import {
 import { MoreVertical, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { BsFillWrenchAdjustableCircleFill } from "react-icons/bs";
+import { toast } from "react-hot-toast";
 
 type Component = {
     id: number;
@@ -83,8 +84,6 @@ export function Components({ components }: ComponentsProps) {
             component.order = index + 1;
         });
 
-        console.log("Updated optimistic state: ", newState);
-
         setOptimisticState(newState);
 
         startTransition(async () => {
@@ -94,13 +93,17 @@ export function Components({ components }: ComponentsProps) {
             }));
 
             setKeyValue(keyValue + 1);
-            console.log("Sending updated orders to server: ", updatedOrders);
 
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
             };
 
-            await axios.put(`${BACKEND_URL}/component/order`, { components: updatedOrders }, config);
+            try {
+                await axios.put(`${BACKEND_URL}/component/order`, { components: updatedOrders }, config);
+                toast.success("Component order updated successfully!");
+            } catch (error) {
+                toast.error("Failed to update component order.");
+            }
         });
     };
 
@@ -111,7 +114,9 @@ export function Components({ components }: ComponentsProps) {
             };
             await axios.delete(BACKEND_URL + `/component/${id}`, config);
             setOptimisticState(prevState => prevState.filter(component => component.id !== id));
+            toast.success("Component deleted successfully!");
         } catch (err) {
+            toast.error("Error deleting component.");
             console.error('Error deleting component:', err);
         }
     };
