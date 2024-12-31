@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WatchTower
+
+**WatchTower** is a status monitoring application that allows users to create customizable status pages for their services. Track components, log incidents, schedule maintenances, and keep your audience informed with real-time updates.
+
+---
+
+## Features
+
+### 🛠️ Core Features
+- **Responsive and Modern Design**: Enjoy a seamless experience on any device, with fully responsive layouts and modern UI components.
+- **Component Monitoring**: Define and monitor key components of your infrastructure.
+- **Incident Management**: Log and update incidents with detailed descriptions and affected components.
+- **Maintenance Scheduling**: Plan and display upcoming maintenance windows to your users, with the possibility to automatically start and complete the maintenance.
+- **Uptime Statistics**: View component uptime over the last 90 days with visual indicators.
+- **Real-Time Updates**: Provide live updates for ongoing incidents and maintenance events.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 🚀 Prerequisites
+Before setting up the project, ensure you have:
+- **Node.js** (v16 or newer)
+
+### 📥 Installation
+
+1. **Clone the repository**:
+```bash
+git clone https://github.com/Fabulosu/WatchTower.git
+cd WatchTower
+```
+2. **Install dependencies:**
+```bash
+npm install
+```
+
+3. **Run the development server:**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. **Download and setup the backend server from [WatchTower-Backend](https://github.com/Fabulosu/WatchTower-Backend)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<br/>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open http://localhost:3000 with your browser to see the result.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.
