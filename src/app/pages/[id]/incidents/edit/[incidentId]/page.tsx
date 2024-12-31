@@ -57,7 +57,7 @@ interface Component {
     status: string;
 }
 
-export const componentStatusOptions = [
+const componentStatusOptions = [
     { value: "1", icon: <FaCheckCircle className="text-green-500" size={16} />, label: "Operational" },
     { value: "2", icon: <FaMinusCircle className="text-yellow-500" size={16} />, label: "Degraded Performance" },
     { value: "3", icon: <FaCircleExclamation className="text-orange-500" size={16} />, label: "Partial Outage" },
