@@ -143,26 +143,34 @@ export default function RegisterPage() {
     const checkAvailability = async (type: number) => {
         let string;
 
-        (type === 1) ? string = usernameRef.current?.value : string = emailRef.current?.value;
+        if (type === 1) {
+            string = usernameRef.current?.value;
+        } else {
+            string = emailRef.current?.value;
+        }
 
         if (string) {
             try {
                 const response = await axios.get(`${BACKEND_URL}/user/exists/${string}`);
                 if (response.data.exists) {
-                    (type === 1) ?
+                    if (type === 1) {
                         setFormErrors(prev => ({
                             ...prev,
                             username: 'Username is already taken'
-                        }))
-                        :
+                        }));
+                    } else {
                         setFormErrors(prev => ({
                             ...prev,
                             email: 'Email is already taken'
-                        }))
-
+                        }));
+                    }
                 }
             } catch (error) {
-                (type === 1) ? console.error('Error checking username availability:', error) : console.error('Error checking email availability:', error);
+                if (type === 1) {
+                    console.error('Error checking username availability:', error);
+                } else {
+                    console.error('Error checking email availability:', error);
+                }
             }
         }
     };
@@ -253,9 +261,13 @@ export default function RegisterPage() {
                 toast.success("Account created successfully. Please login to continue.");
                 router.replace("/login");
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error creating account:', error);
-            toast.error(error.response?.data?.message || "An error occurred while creating the account.");
+            if (axios.isAxiosError(error) && error.response) {
+                toast.error(error.response.data.message || "An error occurred while creating the account.");
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
         }
     }
 

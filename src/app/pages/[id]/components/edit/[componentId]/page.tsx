@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "@/lib/utils";
 import { FaCheckCircle, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
@@ -39,7 +38,6 @@ const componentStatusOptions = [
 ];
 
 export default function EditComponent({ params }: { params: { id: number, componentId: number } }) {
-    const router = useRouter();
     const { data: session } = useSession();
     const [componentName, setComponentName] = useState("");
     const [componentStatus, setComponentStatus] = useState("");

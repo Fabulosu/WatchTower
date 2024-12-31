@@ -71,11 +71,11 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
     const [selectedPage, setSelectedPage] = useState<Page | null>(null);
     const [pages, setPages] = useState<Page[] | null>(null);
 
-    const config = {
-        headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
-    };
-
     useEffect(() => {
+        const config = {
+            headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
+        };
+
         if (session?.user.id) {
             const getUserPages = async () => {
                 try {
@@ -85,7 +85,6 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
                             value: page.id,
                             label: page.name,
                         })) || [];
-
 
                     setPages(fetchedPages);
 
@@ -98,7 +97,7 @@ export function AppSidebar({ className, params }: AppSidebarProps) {
 
             getUserPages();
         }
-    }, [session?.user.id, params.id]);
+    }, [session?.user.id, params.id, session?.backendTokens.accessToken]);
 
     const handleSelect = (value: string) => {
         const selected = pages?.find((page) => page.value === value) || null;

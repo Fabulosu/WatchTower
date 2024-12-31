@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { FaCheckCircle, FaEdit, FaMinusCircle } from "react-icons/fa";
 import { FaCircleExclamation, FaCircleXmark } from "react-icons/fa6";
 import { useEffect, useState, useTransition } from "react";
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import axios from "axios";
 import { BACKEND_URL } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -69,7 +69,7 @@ export function Components({ components }: ComponentsProps) {
         }
     }, [components]);
 
-    const onDragEnd = async (result: any) => {
+    const onDragEnd = async (result: DropResult) => {
         if (!result.destination) return;
 
         const { source, destination } = result;
@@ -102,6 +102,7 @@ export function Components({ components }: ComponentsProps) {
                 await axios.put(`${BACKEND_URL}/component/order`, { components: updatedOrders }, config);
                 toast.success("Component order updated successfully!");
             } catch (error) {
+                console.log(error);
                 toast.error("Failed to update component order.");
             }
         });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -76,13 +76,7 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
     const [selectedSeverity, setSelectedSeverity] = useState("");
     const [affectedComponents, setAffectedComponents] = useState<Component[]>([]);
 
-    useEffect(() => {
-        if (session?.backendTokens.accessToken) {
-            fetchIncident();
-        }
-    }, [incidentId, session?.backendTokens.accessToken]);
-
-    const fetchIncident = async () => {
+    const fetchIncident = useCallback(async () => {
         try {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
@@ -104,7 +98,13 @@ export default function UpdateIncident({ params }: { params: { id: number, incid
         } catch (error) {
             console.error("Error fetching incident:", error);
         }
-    };
+    }, [incidentId, params.id, router, session?.backendTokens.accessToken]);
+
+    useEffect(() => {
+        if (session?.backendTokens.accessToken) {
+            fetchIncident();
+        }
+    }, [session?.backendTokens.accessToken, fetchIncident]);
 
     const handleUpdateIncident = async () => {
         try {

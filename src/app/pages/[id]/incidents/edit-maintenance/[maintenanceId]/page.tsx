@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -83,13 +83,7 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
     const [selectedSeverity, setSelectedSeverity] = useState("");
     const [affectedComponents, setAffectedComponents] = useState<Component[]>([]);
 
-    useEffect(() => {
-        if (session?.backendTokens.accessToken) {
-            fetchIncident();
-        }
-    }, [maintenanceId, session?.backendTokens.accessToken]);
-
-    const fetchIncident = async () => {
+    const fetchIncident = useCallback(async () => {
         try {
             const config = {
                 headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
@@ -110,7 +104,13 @@ export default function UpdateMaintenance({ params }: { params: { id: number, ma
         } catch (error) {
             console.error("Error fetching incident:", error);
         }
-    };
+    }, [maintenanceId, params.id, router, session?.backendTokens.accessToken]);
+
+    useEffect(() => {
+        if (session?.backendTokens.accessToken) {
+            fetchIncident();
+        }
+    }, [maintenanceId, session?.backendTokens.accessToken, fetchIncident]);
 
     const handleUpdateMaintenance = async () => {
         try {

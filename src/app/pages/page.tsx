@@ -42,7 +42,7 @@ export default function Pages() {
         };
 
         fetchPagesAndRedirect();
-    }, [session?.user.id]);
+    }, [router, session?.user.id, session?.backendTokens.accessToken]);
 
     return (
         <div className="min-h-screen flex items-center justify-center py-12">

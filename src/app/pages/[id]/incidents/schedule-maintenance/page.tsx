@@ -43,22 +43,22 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
     });
 
     useEffect(() => {
+        const fetchComponents = async () => {
+            try {
+                const config = {
+                    headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
+                };
+                const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
+                setComponents(response.data.map((component: Component) => ({ ...component })));
+            } catch (error) {
+                console.error("Error fetching components:", error);
+            }
+        };
+
         if (session?.backendTokens.accessToken) {
             fetchComponents();
         }
-    }, [session?.backendTokens.accessToken]);
-
-    const fetchComponents = async () => {
-        try {
-            const config = {
-                headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
-            };
-            const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
-            setComponents(response.data.map((component: Component) => ({ ...component })));
-        } catch (error) {
-            console.error("Error fetching components:", error);
-        }
-    };
+    }, [session?.backendTokens.accessToken, params.id]);
 
     const validateForm = () => {
         const newErrors = {
@@ -179,9 +179,9 @@ export default function CreateMaintenance({ params }: { params: { id: string } }
                         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 md:justify-between">
                             <DatePicker
                                 defaultValue={new Date()}
-                                onChange={(val) => {
-                                    val && setScheduleDate(val.toLocaleDateString('en-CA'));
-                                }}
+                                onChange={(val) => (
+                                    val && setScheduleDate(val.toLocaleDateString('en-CA'))
+                                )}
                             />
                             <div className="flex items-center gap-2">
                                 <Input

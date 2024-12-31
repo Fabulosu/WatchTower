@@ -50,22 +50,22 @@ export default function CreateIncident({ params }: { params: { id: string } }) {
     });
 
     useEffect(() => {
+        const fetchComponents = async () => {
+            try {
+                const config = {
+                    headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
+                };
+                const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
+                setComponents(response.data.map((component: Component) => ({ ...component })));
+            } catch (error) {
+                console.error("Error fetching components:", error);
+            }
+        };
+
         if (session?.backendTokens.accessToken) {
             fetchComponents();
         }
-    }, [session?.backendTokens.accessToken]);
-
-    const fetchComponents = async () => {
-        try {
-            const config = {
-                headers: { Authorization: `Bearer ${session?.backendTokens.accessToken}` },
-            };
-            const response = await axios.get(BACKEND_URL + `/component/page/${params.id}`, config);
-            setComponents(response.data.map((component: Component) => ({ ...component })));
-        } catch (error) {
-            console.error("Error fetching components:", error);
-        }
-    };
+    }, [session?.backendTokens.accessToken, params.id]);
 
     const validateForm = () => {
         const newErrors = {
